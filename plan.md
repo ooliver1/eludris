@@ -3,7 +3,7 @@
 This markdown file is dedicated to explaining and organizing how the features
 and components of Eludris will work.
 
-If a line starts with [STB] (Subject To Change) it hasn't been fully decided on
+If a line starts with [STC] (Subject To Change) it hasn't been fully decided on
 and can be altered or straight up deleted at any given point.
 
 This file is changed every while with new changes and additions appearing.
