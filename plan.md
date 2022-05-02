@@ -147,5 +147,10 @@ I'm hoping to iron them out and doccument them here once I encounter them.
   - [rocket](https://rocket.rs) Rest Api Framework.
   - [tokio-tungstenite](https://github.com/snapview/tokio-tungstenite) Websocket
   Handler.
-  - [diesel-async](https://github.com/weiznich/diesel_async) Database ORM.
+  - [sqlx](https://github.com/launchbadge/sqlx) SQL Query handler.
+
+  Note:
+
+     > We were planning to use asynx-diesel but since diesel doesn't play well with MariaDB (mainly the diesel-cli) we switched to sqlx and the database will be mapped manually.
+
 - [MariaDB](https://mariadb.org) Database.
