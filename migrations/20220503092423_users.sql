@@ -1,13 +1,14 @@
 CREATE TABLE IF NOT EXISTS users (
 	id VARCHAR(30) NOT NULL,
 	username VARCHAR(32) NOT NULL,
-	display_name VARCHAR(32) NOT NULL,
-	points INT NOT NULL,
+	display_name VARCHAR(32),
+	points INT NOT NULL DEFAULT 0,
 	email VARCHAR(255) NOT NULL,
 	password VARCHAR(255) NOT NULL,
-	status VARCHAR(255) NOT NULL,
-	profile TEXT NOT NULL,
-	avatar VARCHAR(30) NOT NULL,
-	banner VARCHAR(30) NOT NULL,
+	status VARCHAR(255),
+	profile TEXT,
+	avatar VARCHAR(30) NOT NULL DEFAULT '0',
+	banner VARCHAR(30),
+	badges INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY (id)
 );
