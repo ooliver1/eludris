@@ -58,6 +58,24 @@ they will not be forced upon people and will have more utilities.
 Also from Discord buttons and more message components will be available to
 give bot developer's more room and tools to make cool stuff.
 
+## Tokens
+
+About tokens, other than having your signup email and password for every request
+you make to `/auth` you get a session token, you ideally should have one session
+token for every browser / app you use with your Eludris instance, that makes it
+possible to invalidate them easily if they ever get compromised.
+
+Changing your password automatically invalidates all your tokens.
+
+Upon connecting to the websocket and sending an auth request, you get a Websocket
+token which unlike your other tokens or password aren't hashed which
+reduces the load on the server for every request you send, you can still use
+your session token but if you're going to connect to the websocket, it's recommended
+to use the provided websocket token.
+
+The websocket tokens are stored temporarily in the cache and are deleted after the
+client disconnects meaning you can't reuse a websocket token after you disconnect.
+
 ## End To End Encryption (e2ee)
 
 End to End encryption will be available in private communities, group encrypted
@@ -143,7 +161,7 @@ I'm hoping to iron them out and doccument them here once I encounter them.
 
 ## Stack
 
-- [Rust](https://rust-lang.org) language.
+- [Rust](https://rust-lang.org) Programming Language.
   - [rocket](https://rocket.rs) Rest Api Framework.
   - [tokio-tungstenite](https://github.com/snapview/tokio-tungstenite) Websocket
   Handler.
@@ -151,6 +169,8 @@ I'm hoping to iron them out and doccument them here once I encounter them.
 
   Note:
 
-     > We were planning to use asynx-diesel but since diesel doesn't play well with MariaDB (mainly the diesel-cli) we switched to sqlx and the database will be mapped manually.
+     > We were planning to use async-diesel but since diesel doesn't play well with MariaDB (mainly the diesel-cli) we switched to sqlx and the database will be mapped manually.
+  - [redis-rs](https://github.com/mitsuhiko/redis-rs) Crate for interfacing with redis.
 
 - [MariaDB](https://mariadb.org) Database.
+- [Redis](https://redis.io) Cache for [websocket tokens](#tokens) & ratelimit info.
