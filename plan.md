@@ -10,7 +10,8 @@ This file is changed every while with new changes and additions appearing.
 
 ## Overview
 
-The goal is to be centered about anime with a side dish of programming.
+The goal is to be centered about anime with a side dish of programming while
+being secure, free, open source and decentralized.
 
 - You can create communities.
 
@@ -129,6 +130,18 @@ the posts may also be encrypted but follow the same foundations.
 Eludris will be federated, meaning anyone can host their own instance and they
 can communicate with other instances so that any user on one instance can
 interact with others on any other instance.
+
+### Side note about federation.
+
+Making your own implementation in the language you prefer is actually encouraged,
+same with forking this one and adding new stuff to it, just make sure to give your
+new features an id and name so that clients that work with multiple instances can
+use your features or not break if you made substantial changes, incidentally everything
+included in this implementation is called `base` and has an id of `0`, all other implementations
+should at least have them.
+
+Features are acquired by sending a `GET` request to an instance's `/` route besides
+the other elements of the `info` payload.
 
 ### [STB] Federation Implementation
 
