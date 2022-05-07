@@ -11,7 +11,7 @@ This file is changed every while with new changes and additions appearing.
 ## Overview
 
 The goal is to be centered about anime with a side dish of programming while
-being secure, free, open source and decentralized.
+being secure, free, privacy respecting, open source and decentralized.
 
 - You can create communities.
 
