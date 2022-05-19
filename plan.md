@@ -43,12 +43,12 @@ HOWEVER that limitation is broken upon multiple instances, refer to the
 
 You can follow people or send them a friend request.
 
-[STB] You also gain some sort of karma like currency? depending on how well your
+[STC] You also gain some sort of karma like currency? depending on how well your
 posts are received, how much you talk with other people and so on.
 
 - Bots done *right*
 
-[STB] Bots will be user accounts (like you'd see on reddit or twitter) which
+[STC] Bots will be user accounts (like you'd see on reddit or twitter) which
 would mean that they wouldn't have any api limitation because if you can do
 something malicious with a bot account you can do it with a user account so I
 think we should focus on making all types of accounts relatively unexploitable.
@@ -143,10 +143,10 @@ should at least have them.
 Features are acquired by sending a `GET` request to an instance's `/` route besides
 the other elements of the `info` payload.
 
-### [STB] Federation Implementation
+### [STC] Federation Implementation
 
 All routes where other instances can request / submit data will have an
-additional `/external` route (like `/communities/id/channel/id/messages/external`).
+additional `/external` route (like `/external/this/channels/:channelid/`).
 
 All instances have an ID generated with the current UNIX timestamp of the
 instance's creation and a random number between 0 and 999999 (for example
@@ -158,14 +158,14 @@ timestamp was multiplied by 1000 then the rounded up.
 
 A new instance (one the home instance has never seen before) will have to
 first send an `identify` payload, this payload is simple as it just provides
-a shared key **private** that both instances can indentify each other with (in
+a shared **private** key that both instances can indentify each other with (in
 case an instance's domain get's compromised) and the instance's id.
 
-`/external` routes will take both http requests and websocket payloads in the
+`/external` routes will take both http requests payloads and websocket payloads in the
 form of http requests (let's say an instance A has a community with a channel that
-has user's on other instances, one of which is B when a user from instance B sends
-a message to `B's domain/external/A's ID/communities/id/channel/id/messages` B
-will send the websocket message event's payload to `A's domain/communities/id/channel/id/messages/external`,
+has user's from other instances, one of which is B when a user from instance B sends
+a message to `B's domain/external/A's ID/channels/:channelid/messages` B
+will send the websocket message event's payload to `A's domain/external/A's ID/channels/:channelid/message`,
 and when a user from instance A send's a message the opposite will happen with A
 sending a request to B's external route).
 
