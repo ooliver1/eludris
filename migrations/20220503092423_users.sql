@@ -16,5 +16,6 @@ CREATE TABLE IF NOT EXISTS users (
 	badges INTEGER NOT NULL DEFAULT 0, # bitfield
 	permissions INTEGER NOT NULL DEFAULT 0, # bitfield
 	pubkey VARCHAR NOT NULL, # Not an ID (duh), blame olivier for this.
+        two_factor_auth VARCHAR(16),
 	PRIMARY KEY (id)
 );
