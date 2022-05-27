@@ -148,7 +148,7 @@ the other elements of the `info` payload.
 All routes where other instances can request / submit data will have an
 additional `/external` route (like `/external/this/channels/:channelid/`).
 
-For info about how IDs are created read [this](IDs).
+For info about how IDs are created read [this](#ids).
 
 `/external` routes will follow specific rules, these being:
 
