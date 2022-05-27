@@ -175,18 +175,18 @@ I'm hoping to iron them out and doccument them here once I encounter them.
 A Eludris ID is a 32 bit (4 byte) number, structured like so.
 
 ```
- 12345678  12345678  12345678  12345678
- TTTTTTTT  TTTTTTTT  SSSSSSSS  RRRROOOO
-╰──────────╯╰───────╯╰─╯
-         │                │        │    
-         │                │4 bit (0.5 byte) Overflow counter.
-         │  12 bit (1.5) byte uniqueness check.
-16 bit (2 byte) Unix Timestamp.
+ 12345678  12345678  12345678  12345678  12345678  12345678  12345678  12345678
+ TTTTTTTT  TTTTTTTT  TTTTTTTT  TTTTTTTT  SSSSSSSS  SSSSSSSS  RRRRRRRR  RRRROOOO
+╰──────────────────────╯╰───────────────────╯╰─╯
+                   │                                      │                │    
+                   │                                      │ 4 bit (0.5 byte) Overflow counter.
+                   │                      28 bit (2.5) byte uniqueness check.
+      32 bit (4 byte) Unix Timestamp.
 ```
 
-T: A Unix timestamp with a custom epoch ( 1650000000 + (16 bit limit * overflow counter value))
-S: A sequence number that's increased everytime an ID is generated then reset once over 1 byte.
-R: A 4 bit random number.
+T: A Unix timestamp with a custom epoch ( 1650000000 + (32 bit limit * overflow counter value))
+S: A sequence number that's increased everytime an ID is generated then reset once over 2 bytes.
+R: A 12 bit random number.
 0: The overflow counter, increases by one once the unix timestamp passes the 16 bit integer limit.
  
 ## Stack
