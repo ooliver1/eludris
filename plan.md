@@ -148,11 +148,7 @@ the other elements of the `info` payload.
 All routes where other instances can request / submit data will have an
 additional `/external` route (like `/external/this/channels/:channelid/`).
 
-All instances have an ID generated with the current UNIX timestamp of the
-instance's creation and a random number between 0 and 999999 (for example
-if the current UNIX timestamp is `1651263594.0693445` and the random number
-is 420, the id would be `16512635940693000420`), notice how the current
-timestamp was multiplied by 1000 then the rounded up.
+For info about how IDs are created read [this](IDs).
 
 `/external` routes will follow specific rules, these being:
 
