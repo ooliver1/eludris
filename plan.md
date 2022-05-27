@@ -172,6 +172,22 @@ sending a request to B's external route).
 I'm sure this implementation has some edge cases which may cause some issues but
 I'm hoping to iron them out and doccument them here once I encounter them.
 
+## Miscellaneous info.
+
+### IDs
+
+A Eludris ID is a 32 bit (4 byte) number, structured like so.
+
+```
+ 12345678  12345678  12345678  12345678
+ TTTTTTTT  TTTTTTTT  SSSSSSSS  RRRROOOO
+╰──────────╯╰───────╯╰─╯
+         │                │        │    
+         │                │ Overflow counter.
+         │  12 bit (1.5) byte uniqueness check.
+16 bit (2 byte) Unix Timestamp with a custom epoch.
+```
+ 
 ## Stack
 
 - [Rust](https://rust-lang.org) Programming Language.
