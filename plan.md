@@ -183,10 +183,15 @@ A Eludris ID is a 32 bit (4 byte) number, structured like so.
  TTTTTTTT  TTTTTTTT  SSSSSSSS  RRRROOOO
 ╰──────────╯╰───────╯╰─╯
          │                │        │    
-         │                │ Overflow counter.
+         │                │4 bit (0.5 byte) Overflow counter.
          │  12 bit (1.5) byte uniqueness check.
-16 bit (2 byte) Unix Timestamp with a custom epoch.
+16 bit (2 byte) Unix Timestamp.
 ```
+
+T: A Unix timestamp with a custom epoch ( 1650000000 + (16 bit limit * overflow counter value))
+S: A sequence number that's increased everytime an ID is generated then reset once over 1 byte.
+R: A 4 bit random number.
+0: The overflow counter, increases by one once the unix timestamp passes the 16 bit integer limit.
  
 ## Stack
 
