@@ -118,7 +118,7 @@ async fn main() -> Result<(), rocket::Error> {
     task::spawn(handle_ws(state.clone()));
 
     // The rest API.
-    let api = rocket::build()
+    rocket::build()
         .mount("/", routes![index])
         .manage(state)
         .manage(pool)
