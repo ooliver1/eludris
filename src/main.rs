@@ -19,10 +19,11 @@ use tokio_tungstenite::{accept_async, tungstenite::Message, WebSocketStream};
 
 // A HashMap of addresses as keys and sinks as values in a Mutex that's in an Arc.
 type Peers = Arc<Mutex<HashMap<SocketAddr, SplitSink<WebSocketStream<TcpStream>, Message>>>>;
-type Database = Arc<Mutex<MySqlPool>>;
+
+// type Database = Arc<Mutex<MySqlPool>>;
 
 // The only struct here, used in both json payloads and ws events.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize)]
 struct ClientMessage {
     author: String,
     content: String,
@@ -31,37 +32,20 @@ struct ClientMessage {
 // An example route that expects a payload of `ClientMessage` and broadcasts it to everyone connected to the websocket.
 #[post("/", format = "json", data = "<message>")]
 async fn index(state: &State<Peers>, message: Json<ClientMessage>) {
-    let message = message.into_inner();
+    let message = to_string(&message.into_inner()).expect("Couldn't conver the message to json.");
     let mut peers = state.lock().await;
     for (_, peer) in peers.iter_mut() {
-        peer.send(Message::Text(to_string(&message).unwrap()))
+        peer.send(Message::Text(message.clone()))
             .await
-            .unwrap();
+            .expect("Couldn't send the message.");
     }
-}
-
-// Showcasing a route communicating with the database.
-#[get("/test")]
-async fn test(state: &State<Database>) -> String {
-    let db = state.lock().await;
-    let res = sqlx::query!("SELECT * FROM users")
-        .fetch_all(&*db) // mmlol
-        .await
-        .unwrap();
-
-    // Probably shitty code
-    let mut out = Vec::new();
-    for r in res {
-        if let Some(test) = r.username {
-            out.push(test);
-        }
-    }
-    out.join("\n")
 }
 
 // A function that handles one peer connecting and disconnecting.
 async fn handle_connection(addr: SocketAddr, stream: TcpStream, peers: Peers) {
-    let socket = accept_async(stream).await.unwrap();
+    let socket = accept_async(stream)
+        .await
+        .expect("Couldn't accept the socket stream.");
 
     let (outgoing, mut incoming) = socket.split();
 
@@ -77,7 +61,7 @@ async fn handle_connection(addr: SocketAddr, stream: TcpStream, peers: Peers) {
         }
     }
 
-    println!("Someone disconnected");
+    log::info!("Someone disconnected");
 
     {
         let mut peers = peers.lock().await;
@@ -87,11 +71,14 @@ async fn handle_connection(addr: SocketAddr, stream: TcpStream, peers: Peers) {
 
 // A function that starts the websocket and uses `handle_connection` for every peer.
 async fn handle_ws(state: Peers) {
-    let socket = TcpListener::bind("0.0.0.0:8001").await.unwrap();
-    println!("ws server started");
+    let ws_address = env::var("WS_ADDRESS").unwrap_or("0.0.0.0:5000".to_string());
+    let socket = TcpListener::bind(&ws_address)
+        .await
+        .expect(&format!("Couldn't start a websocket on {}", ws_address));
+    log::info!("ws server started");
 
     while let Ok((stream, addr)) = socket.accept().await {
-        println!("New connection");
+        log::info!("New connection");
         let clients = state.clone();
         task::spawn(handle_connection(addr, stream, clients));
     }
@@ -99,37 +86,44 @@ async fn handle_ws(state: Peers) {
 
 #[rocket::main]
 async fn main() {
+    // Starting logger.
+    env_logger::init();
+
+    // A HashMap for storing peers.
     let state = Arc::new(Mutex::new(HashMap::new()));
 
     // Establishing a DB connection.
+
     let pool = Arc::new(Mutex::new(
-        MySqlPool::connect(&env::var("DATABASE_URL").unwrap())
-            .await
-            .unwrap(),
+        MySqlPool::connect(
+            &env::var("DATABASE_URL").expect("\"DATABASE_URL\" enviroment variable not found."),
+        )
+        .await
+        .expect("Couldn't establish a connection with the database."),
     ));
 
-    // Cors stuff
+    // Cors stuff.
     let cors = CorsOptions {
         allowed_origins: AllowedOrigins::all(),
         allowed_methods: vec!["GET", "POST"]
             .iter()
-            .map(|s| FromStr::from_str(s).unwrap())
+            .map(|m| FromStr::from_str(m).expect("Couldn't generate cors methods."))
             .collect(),
         ..Default::default()
     }
     .to_cors()
-    .unwrap();
+    .expect("Couldn't create CorsOptions struct.");
 
     // The websocket task.
     task::spawn(handle_ws(state.clone()));
 
     // The rest API.
     rocket::build()
-        .mount("/", routes![index, test])
+        .mount("/", routes![index])
         .manage(state)
         .manage(pool)
         .attach(cors)
         .launch()
         .await
-        .unwrap();
+        .expect("Couldn't launch rocket rest api.");
 }

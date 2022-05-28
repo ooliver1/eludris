@@ -1,5 +1,5 @@
 [package]
-name = "chatapp"
+name = "eludris"
 version = "0.1.0"
 edition = "2021"
 
@@ -13,6 +13,8 @@ tokio-tungstenite = "0.17"
 rocket_cors = "0.6.0-alpha1"
 lazy_static = "1.4"
 regex = "1.5"
+log = "0.4"
+env_logger = "0.9"
 
 [dependencies.rocket]
 version = "0.5.0-rc.1"
