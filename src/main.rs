@@ -71,10 +71,10 @@ async fn handle_connection(addr: SocketAddr, stream: TcpStream, peers: Peers) {
 
 // A function that starts the websocket and uses `handle_connection` for every peer.
 async fn handle_ws(state: Peers) {
-    let ws_address = env::var("WS_ADDRESS").unwrap_or("0.0.0.0:5000".to_string());
+    let ws_address = env::var("WS_ADDRESS").unwrap_or_else(|_| "0.0.0.0:5000".to_string());
     let socket = TcpListener::bind(&ws_address)
         .await
-        .expect(&format!("Couldn't start a websocket on {}", ws_address));
+        .unrwap_or_else(|_| panic!("Couldn't start a websocket on {}", ws_address));
     log::info!("ws server started");
 
     while let Ok((stream, addr)) = socket.accept().await {
@@ -118,6 +118,7 @@ async fn main() {
     task::spawn(handle_ws(state.clone()));
 
     // The rest API.
+    #![allow(clippy::all)] // Ah yes, rocket::Rocket has a must_use lint!
     rocket::build()
         .mount("/", routes![index])
         .manage(state)
