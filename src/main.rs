@@ -118,12 +118,13 @@ async fn main() {
     task::spawn(handle_ws(state.clone()));
 
     // The rest API.
-    #![allow(clippy::all)] rocket::build()
+    let api = rocket::build()
         .mount("/", routes![index])
         .manage(state)
         .manage(pool)
-        .attach(cors)
-        .launch()
+        .attach(cors);
+
+    api.launch()
         .await
         .expect("Couldn't launch rocket rest api."); // Ah yes, rocket::Rocket has a must_use lint!
 }
