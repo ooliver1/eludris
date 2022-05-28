@@ -74,7 +74,7 @@ async fn handle_ws(state: Peers) {
     let ws_address = env::var("WS_ADDRESS").unwrap_or_else(|_| "0.0.0.0:5000".to_string());
     let socket = TcpListener::bind(&ws_address)
         .await
-        .unrwap_or_else(|_| panic!("Couldn't start a websocket on {}", ws_address));
+        .unwrap_or_else(|_| panic!("Couldn't start a websocket on {}", ws_address));
     log::info!("ws server started");
 
     while let Ok((stream, addr)) = socket.accept().await {
@@ -118,13 +118,12 @@ async fn main() {
     task::spawn(handle_ws(state.clone()));
 
     // The rest API.
-    #![allow(clippy::all)] // Ah yes, rocket::Rocket has a must_use lint!
-    rocket::build()
+    #![allow(clippy::all)] rocket::build()
         .mount("/", routes![index])
         .manage(state)
         .manage(pool)
         .attach(cors)
         .launch()
         .await
-        .expect("Couldn't launch rocket rest api.");
+        .expect("Couldn't launch rocket rest api."); // Ah yes, rocket::Rocket has a must_use lint!
 }
