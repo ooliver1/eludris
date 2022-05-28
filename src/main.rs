@@ -124,5 +124,5 @@ async fn main() -> Result<(), rocket::Error> {
         .manage(pool)
         .attach(cors)
         .launch()
-        .await? // Ah yes, rocket::Rocket has a must_use lint!
+        .await?; // Ah yes, rocket::Rocket has a must_use lint!
 }
