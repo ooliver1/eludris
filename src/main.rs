@@ -85,7 +85,7 @@ async fn handle_ws(state: Peers) {
 }
 
 #[rocket::main]
-async fn main() {
+async fn main() -> Result<(), rocket::Error> {
     // Starting logger.
     env_logger::init();
 
@@ -122,9 +122,7 @@ async fn main() {
         .mount("/", routes![index])
         .manage(state)
         .manage(pool)
-        .attach(cors);
-
-    api.launch()
-        .await
-        .expect("Couldn't launch rocket rest api."); // Ah yes, rocket::Rocket has a must_use lint!
+        .attach(cors)
+        .launch()
+        .await? // Ah yes, rocket::Rocket has a must_use lint!
 }
