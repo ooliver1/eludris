@@ -85,7 +85,7 @@ async fn handle_ws(state: Peers) {
 }
 
 #[rocket::main]
-async fn main() -> Result<(), rocket::Error> {
+async fn main() -> std::result::Result<(), rocket::Error> {
     // Starting logger.
     env_logger::init();
 
