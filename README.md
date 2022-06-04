@@ -1,4 +1,4 @@
 # Eludris
-A Simple FOSS Federated Decentralized Social Media Platform with e2ee support.
+A simple FOSS federated decentralized social media platform with e2ee support.
 
 
