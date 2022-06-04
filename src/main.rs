@@ -56,7 +56,9 @@ async fn handle_connection(addr: SocketAddr, stream: TcpStream, peers: Peers) {
 
     while let Some(msg) = incoming.next().await {
         match msg {
-            Ok(_) => {}
+            Ok(data) => {
+                println!("{:#?}", data)
+            }
             Err(_) => break,
         }
     }
