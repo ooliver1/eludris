@@ -1,14 +1,15 @@
 //! The Eludris gateway.
 
 use rocket::{
-    futures::StreamExt,
+    futures::{SinkExt, StreamExt},
     tokio::{
         net::{TcpListener, TcpStream},
+        sync::Mutex,
         task,
     },
 };
-use std::{env, net::SocketAddr};
-use tokio_tungstenite::accept_async;
+use std::{env, net::SocketAddr, sync::Arc};
+use tokio_tungstenite::{accept_async, tungstenite::Message};
 
 use crate::{
     models::client::{Client, Clients},
@@ -22,21 +23,31 @@ async fn handle_connection(addr: SocketAddr, stream: TcpStream, clients: Clients
         .expect("Couldn't accept the socket stream.");
 
     let (outgoing, mut incoming) = socket.split();
+    let outgoing = Arc::new(Mutex::new(outgoing));
 
     {
         let mut clients = clients.lock().await;
         clients.push(Client {
             addr,
-            ws_sink: outgoing,
+            ws_sink: outgoing.clone(),
             last_ping: now_timestamp(),
         });
     }
 
     while let Some(msg) = incoming.next().await {
+        log::debug!("{:#?}", msg);
         match msg {
-            Ok(data) => {
-                println!("{:#?}", data)
-            }
+            Ok(data) => match data {
+                Message::Ping(x) => {
+                    outgoing
+                        .lock()
+                        .await
+                        .send(Message::Pong(x))
+                        .await
+                        .expect("Couldn't send pong");
+                }
+                _ => {}
+            },
             Err(_) => break,
         }
     }
