@@ -1,20 +1,40 @@
 //! The Eludris gateway.
 
 use rocket::{
-    futures::{SinkExt, StreamExt},
+    futures::{stream::SplitSink, SinkExt, StreamExt},
     tokio::{
         net::{TcpListener, TcpStream},
         sync::Mutex,
         task,
+        time::sleep,
+        select,
     },
 };
-use std::{env, net::SocketAddr, sync::Arc};
-use tokio_tungstenite::{accept_async, tungstenite::Message};
+use std::{env, net::SocketAddr, sync::Arc, time::Duration};
+use tokio_tungstenite::{accept_async, tungstenite::Message, WebSocketStream};
 
 use crate::{
     models::client::{Client, Clients},
     utils::now_timestamp,
 };
+
+async fn check_connection(
+    last_ping: Arc<Mutex<u32>>,
+    stream: Arc<Mutex<SplitSink<WebSocketStream<TcpStream>, Message>>>,
+) {
+    loop {
+        if (*last_ping.lock().await + 20) < now_timestamp() {
+            println!("Over.");
+            stream
+                .lock()
+                .await
+                .close()
+                .await
+                .expect("Couldn't close ws.");
+        }
+        sleep(Duration::from_secs(20)).await;
+    }
+}
 
 /// A function that handles one client connecting and disconnecting.
 async fn handle_connection(addr: SocketAddr, stream: TcpStream, clients: Clients) {
@@ -25,31 +45,40 @@ async fn handle_connection(addr: SocketAddr, stream: TcpStream, clients: Clients
     let (outgoing, mut incoming) = socket.split();
     let outgoing = Arc::new(Mutex::new(outgoing));
 
+    let last_ping = Arc::new(Mutex::new(now_timestamp()));
+
     {
         let mut clients = clients.lock().await;
         clients.push(Client {
             addr,
             ws_sink: outgoing.clone(),
-            last_ping: now_timestamp(),
         });
     }
 
-    while let Some(msg) = incoming.next().await {
-        log::debug!("{:#?}", msg);
-        match msg {
-            Ok(data) => match data {
-                Message::Ping(x) => {
-                    outgoing
-                        .lock()
-                        .await
-                        .send(Message::Pong(x))
-                        .await
-                        .expect("Couldn't send pong");
-                }
-                _ => {}
-            },
-            Err(_) => break,
+    let handle_incoming = async {
+        while let Some(msg) = incoming.next().await {
+            log::debug!("{:#?}", msg);
+            match msg {
+                Ok(data) => match data {
+                    Message::Ping(x) => {
+                        *last_ping.lock().await = now_timestamp();
+                        outgoing
+                            .lock()
+                            .await
+                            .send(Message::Pong(x))
+                            .await
+                            .expect("Couldn't send pong");
+                    }
+                    _ => {}
+                },
+                Err(_) => break,
+            }
         }
+    };
+
+    select!{
+        _ = check_connection(last_ping.clone(), outgoing.clone()) => {},
+        _ = handle_incoming => {},
     }
 
     log::info!("Someone disconnected");

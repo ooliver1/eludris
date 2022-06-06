@@ -13,7 +13,6 @@ pub struct Client {
     // `addr` mainly exists so that we can remove the clients from the connected gateway peers later.
     pub addr: SocketAddr,
     pub ws_sink: Arc<Mutex<SplitSink<WebSocketStream<TcpStream>, Message>>>,
-    pub last_ping: u32,
 }
 
 pub type Clients = Arc<Mutex<Vec<Client>>>;
