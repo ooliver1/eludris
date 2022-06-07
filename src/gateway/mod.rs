@@ -1,36 +1,29 @@
 //! The Eludris gateway.
 
 use rocket::{
-    futures::{stream::SplitSink, SinkExt, StreamExt},
+    futures::{SinkExt, StreamExt},
     tokio::{
         net::{TcpListener, TcpStream},
+        select,
         sync::Mutex,
         task,
         time::sleep,
-        select,
     },
 };
 use std::{env, net::SocketAddr, sync::Arc, time::Duration};
-use tokio_tungstenite::{accept_async, tungstenite::Message, WebSocketStream};
+use tokio_tungstenite::{accept_async, tungstenite::Message};
 
 use crate::{
     models::client::{Client, Clients},
     utils::now_timestamp,
 };
 
-async fn check_connection(
-    last_ping: Arc<Mutex<u32>>,
-    stream: Arc<Mutex<SplitSink<WebSocketStream<TcpStream>, Message>>>,
-) {
+/// A simple function that check's if a client's last ping was over 20 seconds ago and closes the
+/// websocket if so.
+async fn check_connection(last_ping: Arc<Mutex<u32>>) {
     loop {
         if (*last_ping.lock().await + 20) < now_timestamp() {
-            println!("Over.");
-            stream
-                .lock()
-                .await
-                .close()
-                .await
-                .expect("Couldn't close ws.");
+            break;
         }
         sleep(Duration::from_secs(20)).await;
     }
@@ -42,8 +35,8 @@ async fn handle_connection(addr: SocketAddr, stream: TcpStream, clients: Clients
         .await
         .expect("Couldn't accept the socket stream.");
 
-    let (outgoing, mut incoming) = socket.split();
-    let outgoing = Arc::new(Mutex::new(outgoing));
+    let (tx, mut rx) = socket.split();
+    let tx = Arc::new(Mutex::new(tx));
 
     let last_ping = Arc::new(Mutex::new(now_timestamp()));
 
@@ -51,34 +44,33 @@ async fn handle_connection(addr: SocketAddr, stream: TcpStream, clients: Clients
         let mut clients = clients.lock().await;
         clients.push(Client {
             addr,
-            ws_sink: outgoing.clone(),
+            tx: tx.clone(),
         });
     }
 
-    let handle_incoming = async {
-        while let Some(msg) = incoming.next().await {
-            log::debug!("{:#?}", msg);
+    let handle_rx = async {
+        while let Some(msg) = rx.next().await {
+            log::debug!("New websocket message:\n{:#?}", msg);
             match msg {
                 Ok(data) => match data {
                     Message::Ping(x) => {
                         *last_ping.lock().await = now_timestamp();
-                        outgoing
-                            .lock()
+                        tx.lock()
                             .await
                             .send(Message::Pong(x))
                             .await
                             .expect("Couldn't send pong");
                     }
-                    _ => {}
+                    _ => todo!(),
                 },
                 Err(_) => break,
             }
         }
     };
 
-    select!{
-        _ = check_connection(last_ping.clone(), outgoing.clone()) => {},
-        _ = handle_incoming => {},
+    select! {
+        _ = check_connection(last_ping.clone()) => {},
+        _ = handle_rx => {},
     }
 
     log::info!("Someone disconnected");

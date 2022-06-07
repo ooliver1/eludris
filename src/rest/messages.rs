@@ -14,7 +14,7 @@ pub async fn index(clients: &State<Clients>, message: Json<ClientMessage>) {
     let mut clients = clients.lock().await;
     for client in clients.iter_mut() {
         client
-            .ws_sink
+            .tx
             .lock()
             .await
             .send(Message::Text(message.clone())) // Clone it for every client.
