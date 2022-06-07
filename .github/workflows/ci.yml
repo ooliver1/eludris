@@ -47,7 +47,7 @@ jobs:
           command: test
 
       env:
-        - DATABASE_URL=mysql://root:root@localhost:3306/eludris
+        DATABASE_URL: mysql://root:root@localhost:3306/eludris
 
   clippy:
     name: Clippy; Destroyer of Realities.
@@ -72,4 +72,4 @@ jobs:
           args: -- -D warnings
 
       env:
-        - DATABASE_URL=mysql://root:root@localhost:3306/eludris
+        DATABASE_URL: mysql://root:root@localhost:3306/eludris
