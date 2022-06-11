@@ -195,8 +195,8 @@ Eludris uses a non persistent redis instance to store data that should be really
 like the websocket tokens and the ratelimiting data.
 
 Here's the structure of the two redis keys:
-- token:<user-id>
-- ratelimit:<user-id>:<method>:<route>
+- token:\<user-id>
+- ratelimit:\<user-id>:\<method>:\<route>
  
 ### Stack
 
