@@ -188,8 +188,17 @@ T: A Unix timestamp with a custom epoch ( 1650000000 + (32 bit limit * overflow 
 S: A sequence number that's increased everytime an ID is generated then reset once over 2 bytes.
 R: A 12 bit random number.
 0: The overflow counter, increases by one once the unix timestamp passes the 16 bit integer limit.
+
+### Redis
+
+Eludris uses a non persistent redis instance to store data that should be really fast to fetch and is ephemeral
+like the websocket tokens and the ratelimiting data.
+
+Here's the structure of the two redis keys:
+- token:<user-id>
+- ratelimit:<user-id>:<method>:<route>
  
-## Stack
+### Stack
 
 - [Rust](https://rust-lang.org) Programming Language.
   - [rocket](https://rocket.rs) Rest Api Framework.
@@ -204,3 +213,16 @@ R: A 12 bit random number.
 
 - [MariaDB](https://mariadb.org) Database.
 - [Redis](https://redis.io) Cache for [websocket tokens](#tokens) & ratelimit info.
+
+### Internal names
+
+Some of the Eludris components have names that are used internally by the Eludris dev team or are referenced directly in the source code.
+
+Here are some of these names:
+- Pandemonium: The Eludris Websocket based gatway.
+
+## API Spec
+
+### Payloads
+
+### Routes
