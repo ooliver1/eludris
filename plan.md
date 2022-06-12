@@ -68,14 +68,14 @@ possible to invalidate them easily if they ever get compromised.
 
 Changing your password automatically invalidates all your tokens.
 
-Upon connecting to the websocket and sending an auth request, you get a Websocket
-token which unlike your other tokens or password aren't hashed which
-reduces the load on the server for every request you send, you can still use
-your session token but if you're going to connect to the websocket, it's recommended
-to use the provided websocket token.
+Upon connecting to the gateway (Pandemonium) and sending an auth request, you
+get a Pandemonium token which unlike your other tokens or password aren't
+hashed to reduces the load on the server for every request you send, you can
+still use your session token but if you're going to connect to Pandemonium,
+it's recommended to use the provided Pandemonium token.
 
-The websocket tokens are stored temporarily in the cache and are deleted after the
-client disconnects meaning you can't reuse a websocket token after you disconnect.
+Pandemonium tokens are stored temporarily in the cache and are deleted after the
+client disconnects meaning you can't reuse a Pandemonium token after you disconnect.
 
 ## End To End Encryption (e2ee)
 
@@ -131,14 +131,14 @@ Eludris will be federated, meaning anyone can host their own instance and they
 can communicate with other instances so that any user on one instance can
 interact with others on any other instance.
 
-### Side note about federation.
+### Side note about federation
 
 Making your own implementation in the language you prefer is actually encouraged,
 same with forking this one and adding new stuff to it, just make sure to give your
 new features an id and name so that clients that work with multiple instances can
-use your features or not break if you made substantial changes, incidentally everything
-included in this implementation is called `base` and has an id of `0`, all other implementations
-should at least have them.
+use your features & not break if you made substantial changes, incidentally everything
+included in this implementation is called `base` and has an id of `0`, all other
+implementations should at least have them.
 
 Features are acquired by sending a `GET` request to an instance's `/` route besides
 the other elements of the `info` payload.
@@ -157,18 +157,18 @@ first send an `identify` payload, this payload is simple as it just provides
 a shared **private** key that both instances can indentify each other with (in
 case an instance's domain get's compromised) and the instance's id.
 
-`/external` routes will take both http requests payloads and websocket payloads in the
-form of http requests (let's say an instance A has a community with a channel that
-has user's from other instances, one of which is B when a user from instance B sends
-a message to `B's domain/external/A's ID/channels/:channelid/messages` B
-will send the websocket message event's payload to `A's domain/external/A's ID/channels/:channelid/message`,
-and when a user from instance A send's a message the opposite will happen with A
-sending a request to B's external route).
+`/external` routes will take both http requests payloads and Pandemonium payloads
+in the form of http requests (let's say an instance A has a community with a
+channel that has user's from other instances, one of which is B when a user from
+instance B sends a message to `B's domain/external/A's ID/channels/:channelid/
+messages` B will send the rest api message payload to `A's domain/external/
+A's ID/channels/:channelid/message`, and when a user from instance A send's a
+message the opposite will happen with A sending a request to B's external route).
 
 I'm sure this implementation has some edge cases which may cause some issues but
 I'm hoping to iron them out and doccument them here once I encounter them.
 
-## Miscellaneous info.
+## Miscellaneous info
 
 ### IDs
 
@@ -178,47 +178,62 @@ A Eludris ID is a 32 bit (4 byte) number, structured like so.
  12345678  12345678  12345678  12345678  12345678  12345678  12345678  12345678
  TTTTTTTT  TTTTTTTT  TTTTTTTT  TTTTTTTT  SSSSSSSS  SSSSSSSS  RRRRRRRR  RRRROOOO
 ╰──────────────────────╯╰───────────────────╯╰─╯
-                   │                                      │                │    
+                   │                                      │                │
                    │                                      │ 4 bit (0.5 byte) Overflow counter.
                    │                      28 bit (2.5) byte uniqueness check.
       32 bit (4 byte) Unix Timestamp.
 ```
 
-T: A Unix timestamp with a custom epoch ( 1650000000 + (32 bit limit * overflow counter value))
-S: A sequence number that's increased everytime an ID is generated then reset once over 2 bytes.
+T: A Unix timestamp with a custom epoch
+( 1,650,000,000 + (32 bit limit * overflow counter value))
+
+S: A sequence number that's increased everytime an ID is generated then reset
+once over 2 bytes.
+
 R: A 12 bit random number.
-0: The overflow counter, increases by one once the unix timestamp passes the 16 bit integer limit.
+
+O: The overflow counter, increases by one once the unix timestamp passes the 16
+bit integer limit.
 
 ### Redis
 
-Eludris uses a non persistent redis instance to store data that should be really fast to fetch and is ephemeral
-like the websocket tokens and the ratelimiting data.
+Eludris uses a non persistent redis instance to store data that should be really
+fast to fetch and is ephemeral
+
+like the Pandemonium tokens and the ratelimiting data.
 
 Here's the structure of the two redis keys:
+
 - token:\<user-id>
 - ratelimit:\<user-id>:\<method>:\<route>
- 
+
 ### Stack
 
 - [Rust](https://rust-lang.org) Programming Language.
   - [rocket](https://rocket.rs) Rest Api Framework.
-  - [tokio-tungstenite](https://github.com/snapview/tokio-tungstenite) Websocket
+  - [tokio-tungstenite](https://github.com/snapview/tokio-tungstenite)
+    Pandemonium (gateway)
   Handler.
   - [sqlx](https://github.com/launchbadge/sqlx) SQL Query handler.
 
   Note:
 
-     > We were planning to use async-diesel but since diesel doesn't play well with MariaDB (mainly the diesel-cli) we switched to sqlx and the database will be mapped manually.
-  - [redis-rs](https://github.com/mitsuhiko/redis-rs) Crate for interfacing with redis.
+     > We were planning to use async-diesel but since diesel doesn't play well
+     with MariaDB (mainly the diesel-cli) we switched to sqlx and the database will
+     be mapped manually.
+  - [redis-rs](https://github.com/mitsuhiko/redis-rs) Crate for interfacing with
+  redis.
 
 - [MariaDB](https://mariadb.org) Database.
-- [Redis](https://redis.io) Cache for [websocket tokens](#tokens) & ratelimit info.
+- [Redis](https://redis.io) Cache for [Pandemonium tokens](#tokens) & ratelimit info.
 
 ### Internal names
 
-Some of the Eludris components have names that are used internally by the Eludris dev team or are referenced directly in the source code.
+Some of the Eludris components have names that are used internally by the
+Eludris dev team or are referenced directly in the source code.
 
 Here are some of these names:
+
 - Pandemonium: The Eludris Websocket based gatway.
 
 ## API Spec

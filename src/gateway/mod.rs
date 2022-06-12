@@ -1,4 +1,4 @@
-//! The Eludris gateway.
+//! The Eludris gateway, also called Pandemonium.
 
 use rocket::{
     futures::{SinkExt, StreamExt},

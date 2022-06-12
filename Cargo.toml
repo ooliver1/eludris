@@ -23,3 +23,7 @@ features = ["json"]
 [dependencies.sqlx]
 version = "0.5"
 features = ["mysql", "runtime-tokio-rustls"]
+
+[dependencies.redis]
+version = "0.21"
+features = ["tokio-comp", "aio"]

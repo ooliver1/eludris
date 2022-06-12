@@ -6,6 +6,7 @@ mod utils;
 #[macro_use]
 extern crate rocket;
 
+use redis::Client;
 use rocket::tokio::{sync::Mutex, task};
 use sqlx::MySqlPool;
 use std::{env, sync::Arc};
@@ -25,6 +26,18 @@ async fn main() -> Result<(), rocket::Error> {
         )
         .await
         .expect("Couldn't establish a connection with the database."),
+    ));
+
+    // Establishing a Redis connection.
+    let client =
+        Client::open(env::var("REDIS_URL").expect("\"REDIS_URL\" enviroment variable not found"))
+            .expect("Couldn't connect to Redis at the specified URL.");
+    // TODO: do something with this.
+    let _con = Arc::new(Mutex::new(
+        client
+            .get_async_connection()
+            .await
+            .expect("Couldn't obtain Redis connection"),
     ));
 
     // Start a task for the gateway.
