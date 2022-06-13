@@ -177,7 +177,7 @@ A Eludris ID is a 32 bit (4 byte) number, structured like so.
 ```
  12345678  12345678  12345678  12345678  12345678  12345678  12345678  12345678
  TTTTTTTT  TTTTTTTT  TTTTTTTT  TTTTTTTT  SSSSSSSS  SSSSSSSS  RRRRRRRR  RRRROOOO
-╰──────────────────────╯╰───────────────────╯╰─╯
+╰──────────────────────────────────────╯╰──────────────────────────────────╯╰─╯
                    │                                      │                │
                    │                                      │ 4 bit (0.5 byte) Overflow counter.
                    │                      28 bit (2.5) byte uniqueness check.
