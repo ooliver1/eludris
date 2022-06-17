@@ -234,7 +234,10 @@ Eludris dev team or are referenced directly in the source code.
 
 Here are some of these names:
 
+- Das Ding: The Eludris logo.
+- Thang: The Eludris mascot.
 - Pandemonium: The Eludris Websocket based gatway.
+- Carnage: The official Eludris frontend.
 
 ## API Spec
 
