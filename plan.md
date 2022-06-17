@@ -4,35 +4,39 @@ This markdown file is dedicated to explaining and organizing how the features
 and components of Eludris will work.
 
 If a line starts with [STC] (Subject To Change) it hasn't been fully decided on
-and can be altered or straight up deleted at any given point.
+and can be altered or straight up removed at any given point in time.
 
 This file is changed every while with new changes and additions appearing.
 
 ## Overview
 
-The goal is to be centered about anime with a side dish of programming while
-being secure, free, privacy respecting, open source and decentralized.
+The goal is to provide a uniquely fresh but not totally new experience focused
+around programming but also any other topic / interest whilst being secure, free 
+(as in monetary value), free (as in freedom), privacy respecting, open source
+and decentralized without inconveniencing users who may not have anything to do
+with the aforementioned topics.
 
 - You can create communities.
 
-Communities can be an either text, post or text and post community.
+Communities can be an either a messaging community, a post community or both.
 
-Text communities work like how a discord server would.
+Messaging communities work like how a discord server would.
 
 Post communities work like how a reddit subreddit would.
 
 Communities can be either public or private.
 
-Communities can get manually reviewed by a staff member to get verified.
+Communities can get manually reviewed by a staff member to get verified if requested
+by the community's owner.
 
-Verified communities can claim a namespace getting their own url invite and are
-discoverable using the built in search feature.
+Verified communities can claim a namespace getting their own url invite and are indexed
+in a list to be easily discoverable.
 
 Verified communities have more restrictions upon them however
 (like no e2ee, stricter moderation and so on).
 
 A community can get unverified at any point in time if they break the Eludris
-EULA, TOS or platform rules, that however can be appealed and unjustified
+EULA, TOS or instance rules, that however can be appealed and unjustified
 unverification will not happen.
 
 - Accounts are unique.
@@ -43,8 +47,9 @@ HOWEVER that limitation is broken upon multiple instances, refer to the
 
 You can follow people or send them a friend request.
 
-[STC] You also gain some sort of karma like currency? depending on how well your
-posts are received, how much you talk with other people and so on.
+You also gain some sort of karma like point creativity called social credits
+depending on how well you are generally received, how much you interact with 
+people and so on.
 
 - Bots done *right*
 
@@ -56,8 +61,8 @@ think we should focus on making all types of accounts relatively unexploitable.
 Discord style application commands will be available, however unlike discord
 they will not be forced upon people and will have more utilities.
 
-Also from Discord buttons and more message components will be available to
-give bot developer's more room and tools to make cool stuff.
+Also from Discord, buttons and more message components will be available to
+give bot developers more room and tools to make cool stuff.
 
 ## Tokens
 
