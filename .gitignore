@@ -6,4 +6,7 @@
 **/*.rs.bk
 
 # enviroment variables
-*env*
+.env
+
+# Desufile
+Desufile
