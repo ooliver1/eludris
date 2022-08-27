@@ -20,6 +20,7 @@ services:
 
   mariadb:
       image: mariadb:latest
+      restart: unless-stopped
 
       environment:
         - MYSQL_ROOT_PASSWORD=root
@@ -31,6 +32,7 @@ services:
 
   redis:
     image: "redis:alpine"
+    restart: unless-stopped
 
     command: redis-server
 
