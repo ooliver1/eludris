@@ -37,7 +37,7 @@ async fn handle_connection(addr: SocketAddr, stream: TcpStream, clients: Clients
     let (tx, mut rx) = socket.split();
     let tx = Arc::new(Mutex::new(tx));
 
-    let last_ping = Arc::new(Mutex::new(Instant::now()));
+    let last_ping = Arc::new(Mutex::new(Instant::now() - PING_RATELIMIT_RESET));
 
     {
         let mut clients = clients.lock().await;
