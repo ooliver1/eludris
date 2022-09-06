@@ -1,0 +1,9 @@
+[submodule "oprish"]
+	path = oprish
+	url = git@github.com:eludris/oprish.git
+[submodule "pandemonium"]
+	path = pandemonium
+	url = git@github.com:eludris/pandemonium.git
+[submodule "todel"]
+	path = todel
+	url = git@github.com:eludris/todel.git
