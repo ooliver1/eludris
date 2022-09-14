@@ -12,7 +12,7 @@ services:
       ROCKET_DATABASES: "{redis-cache={url=\"redis://keydb\"}}"
 
     ports:
-      - "8000:8000"
+      - "7159:7159"
 
     command: ["bash", "-c", "sleep 10 && /bin/oprish"]
 
@@ -31,7 +31,7 @@ services:
       REDIS_URL: redis://keydb # Syke
 
     ports:
-      - "9000:9000"
+      - "7160:7160"
 
     command: ["bash", "-c", "sleep 10 && /bin/pandemonium"]
 
