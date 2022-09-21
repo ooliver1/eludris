@@ -14,8 +14,6 @@ services:
     ports:
       - "7159:7159"
 
-    command: ["bash", "-c", "sleep 10 && /bin/oprish"]
-
     build:
       context: ./oprish
       dockerfile: Dockerfile
@@ -33,31 +31,10 @@ services:
     ports:
       - "7160:7160"
 
-    command: ["bash", "-c", "sleep 10 && /bin/pandemonium"]
-
     build:
       context: ./pandemonium
       dockerfile: Dockerfile
 
-  zookeeper:
-    image: "confluentinc/cp-zookeeper:5.2.1"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  kafka:
-    image: "confluentinc/cp-enterprise-kafka:5.2.1"
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_BROKER_ID: 0
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENERS: INTERNAL://kafka:9092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 100
-
   keydb:
     image: eqalpha/keydb
+    restart: unless-stopped
