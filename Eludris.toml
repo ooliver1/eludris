@@ -1,4 +1,6 @@
 instance_name = "" # This is required, has to be over 0 characters long.
+# Optional instance description, can be from 1 to 2048 characters long.
+# description = ""
 
 # You can uncomment the sections that you want and change their config values,
 # this is just the defaults.
