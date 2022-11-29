@@ -32,3 +32,5 @@ instance_name = "" # This is required, has to be over 0 characters long.
 #[effis.ratelimits]
 #assets = { reset_after = 60, limit = 5, file_size_limit = "30MB"}
 #attachments = { reset_after = 180, limit = 20 file_size_limit = "500MB" }
+# This is a normal ratelimit
+#fetch_file = { reset_after = 60, limit = 30 }
