@@ -8,8 +8,5 @@
 # enviroment variables
 .env
 
-# Desufile
-Desufile
-
-# Obsidian
-.obsidian
+# effis files
+files
