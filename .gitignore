@@ -8,8 +8,8 @@
 # enviroment variables
 .env
 
-# Desufile
-Desufile
+# effis files
+files
 
-# Obsidian
-.obsidian
+keydb
+mariadb
