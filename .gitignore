@@ -10,3 +10,6 @@
 
 # effis files
 files
+
+keydb
+mariadb

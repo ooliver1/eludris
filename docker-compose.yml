@@ -66,7 +66,7 @@ services:
     <<: *restart-policy
     image: eqalpha/keydb
     volumes:
-      - "/keydb:/var/lib/mysql"
+      - "./keydb:/data"
 
   mariadb:
     <<: *restart-policy
@@ -76,4 +76,4 @@ services:
       MYSQL_ROOT_HOST: "%"
       MYSQL_DATABASE: eludris
     volumes:
-      - "/maraidb:/var/lib/mysql"
+      - "./mariadb:/var/lib/mysql"
