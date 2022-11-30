@@ -10,6 +10,7 @@ instance_name = "" # This is required, has to be over 0 characters long.
 
 #[oprish]
 #message_limit = 2048 # The maximum message content length.
+#url = "" # Optional Oprish url for the instance info
 
 #[oprish.ratelimits]
 #info = { reset_after = 5, limit = 2}
@@ -17,11 +18,13 @@ instance_name = "" # This is required, has to be over 0 characters long.
 #ratelimits = { reset_after = 5, limit = 2 }
 
 #[pandemonium]
+#url = "" # Optional Pandemonium url for the instance info
 #ratelimit = { reset_after = 10, limit = 5}
 
 #[effis]
 #file_size = "20MB" # The maximum file size for all the assets
 #attachment_file_size = "100MB" # The maximum file size for the attachment bucket
+#url = "" # Optional Effis url for the instance info
 
 # Effis ratelimits are special, you're not only limited by how many requests per
 # bucket reset, but also by how big the files you upload are, so assuming a ratelimit
@@ -30,6 +33,8 @@ instance_name = "" # This is required, has to be over 0 characters long.
 # which I get ratelimited.
 
 #[effis.ratelimits]
+# The ratelimit for all buckets besides the attachments one, these buckets are
+# stuff like avatars, guild icons, etc.
 #assets = { reset_after = 60, limit = 5, file_size_limit = "30MB"}
 #attachments = { reset_after = 180, limit = 20 file_size_limit = "500MB" }
 # This is a normal ratelimit
