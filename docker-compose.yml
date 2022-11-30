@@ -1,50 +1,79 @@
 version: "3"
 
+x-conf:
+  &conf
+  type: bind
+  source: Eludris.toml
+  target: /Eludris.toml
+
+x-restart-policy:
+  &restart-policy
+  restart: unless-stopped
+
+x-needs-dbs:
+  &needs-dbs
+  depends_on: ["mariadb", "keydb"]
+
+x-dbs:
+  &dbs
+  DATABASE_URL: "mysql://root:root@mariadb/eludris"
+  REDIS_URL: "redis://keydb:6379"
+
+x-default-service:
+  &default-service
+  <<: *restart-policy
+  <<: *needs-dbs
+
 services:
   oprish:
-    container_name: oprish
-    env_file: .env
-    restart: unless-stopped
+    <<: *default-service
 
-    environment:
-      BROKERS: kafka
-      # God have mercy
-      ROCKET_DATABASES: "{redis-cache={url=\"redis://keydb\"}}"
-      DB_URL: "mysql://root:root@mariadb/eludris"
-
+    environment: *dbs
     ports:
       - "7159:7159"
-
+    volumes:
+      - <<: *conf
     build:
       context: ./oprish
       dockerfile: Dockerfile
 
   pandemonium:
-    container_name: pandemonium
-    env_file: .env
-    restart: unless-stopped
+    <<: *default-service
 
-    environment:
-      BROKERS: kafka
-      # Now for redis url
-      REDIS_URL: redis://keydb # Syke
-      DB_URL: "mysql://root:root@mariadb/eludris"
-
+    environment: *dbs
     ports:
       - "7160:7160"
-
+    volumes:
+      - <<: *conf
     build:
       context: ./pandemonium
       dockerfile: Dockerfile
 
+  effis:
+    <<: *default-service
+
+    environment: *dbs
+    ports:
+      - "7161:7161"
+    volumes:
+      - <<: *conf
+      - "./files:/files"
+    build:
+      context: ./effis
+      dockerfile: Dockerfile
+
   keydb:
+    <<: *restart-policy
     image: eqalpha/keydb
-    restart: unless-stopped
+    volumes:
+      - "/keydb:/var/lib/mysql"
 
   mariadb:
-      image: mariadb:latest
-
-      environment:
-        - MYSQL_ROOT_PASSWORD=root
-        - MYSQL_ROOT_HOST=%
-        - MYSQL_DATABASE=eludris
+    <<: *restart-policy
+    image: mariadb:10-jammy
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: eludris
+    volumes:
+      - "/maraidb:/var/lib/mysql"
