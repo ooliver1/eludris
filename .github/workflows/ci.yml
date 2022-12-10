@@ -56,7 +56,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       # - run: docker-compose -f ${{ matrix.test }}/tests/docker-compose.yml up -d
-      run: docker-compose -f tests/docker-compose.yml up -d
+      - run: docker-compose -f tests/docker-compose.yml up -d
 
       - uses: actions-rs/cargo@v1
         with:
@@ -65,7 +65,6 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test
-          # command: test --package ${{ matrix.test }}
         env:
           RUST_LOG: "trace"
           REDIS_URL: "redis://127.0.0.1:6379"
