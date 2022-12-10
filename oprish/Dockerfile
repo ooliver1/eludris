@@ -4,6 +4,7 @@ FROM rust:slim-buster as builder
 WORKDIR /oprish
 
 COPY Cargo.lock oprish/Cargo.toml ./
+COPY ./todel /todel
 COPY ./oprish/src ./src
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \

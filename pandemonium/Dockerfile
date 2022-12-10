@@ -4,6 +4,7 @@ FROM rust:slim-buster as builder
 WORKDIR /pandemonium
 
 COPY Cargo.lock pandemonium/Cargo.toml ./
+COPY ./todel /todel
 COPY ./pandemonium/src ./src
 
 # Remove docker's default of removing cache after use.
