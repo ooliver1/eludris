@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  keydb:
+    image: eqalpha/keydb
+    ports:
+      - "6379:6379"
+
