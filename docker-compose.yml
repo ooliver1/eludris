@@ -59,8 +59,8 @@ services:
       - <<: *conf
       - "./files:/files"
     build:
-      context: ./effis
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: effis/Dockerfile
 
   keydb:
     <<: *restart-policy

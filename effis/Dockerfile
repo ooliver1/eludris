@@ -3,8 +3,9 @@ FROM rust:slim-buster as builder
 
 WORKDIR /effis
 
-COPY Cargo.lock Cargo.toml ./
-COPY ./src ./src
+COPY Cargo.lock effis/Cargo.toml ./
+COPY ./todel /todel
+COPY ./effis/src ./src
 COPY ./migrations ./migrations
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
