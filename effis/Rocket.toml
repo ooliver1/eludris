@@ -1,0 +1,6 @@
+[global]
+temp_dir = "./tmp"
+
+[global.limits]
+file = "10MiB"
+data-form = "10MiB"
