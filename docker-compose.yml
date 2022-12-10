@@ -12,7 +12,7 @@ x-restart-policy:
 
 x-needs-dbs:
   &needs-dbs
-  depends_on: ["mariadb", "keydb"]
+  depends_on: [ "mariadb", "keydb" ]
 
 x-dbs:
   &dbs
@@ -34,8 +34,8 @@ services:
     volumes:
       - <<: *conf
     build:
-      context: ./oprish
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: oprish/Dockerfile
 
   pandemonium:
     <<: *default-service

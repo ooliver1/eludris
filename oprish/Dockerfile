@@ -3,8 +3,8 @@ FROM rust:slim-buster as builder
 
 WORKDIR /oprish
 
-COPY Cargo.lock Cargo.toml ./
-COPY ./src ./src
+COPY Cargo.lock oprish/Cargo.toml ./
+COPY ./oprish/src ./src
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/oprish/target \
