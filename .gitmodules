@@ -1,6 +1,3 @@
-[submodule "oprish"]
-	path = oprish
-	url = https://github.com/eludris/oprish
 [submodule "pandemonium"]
 	path = pandemonium
 	url = https://github.com/eludris/pandemonium
