@@ -38,10 +38,11 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name !=
       github.repository
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        test: [oprish, effis, todel]
-      fail-fast: false
+    # Use this when actual tests are added.
+    # strategy:
+    #   matrix:
+    #     test: [oprish, effis, todel]
+    #   fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
@@ -54,7 +55,8 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - run: docker-compose -f ${{ matrix.test }}/tests/docker-compose.yml up -d
+      # - run: docker-compose -f ${{ matrix.test }}/tests/docker-compose.yml up -d
+      run: docker-compose -f tests/docker-compose.yml up -d
 
       - uses: actions-rs/cargo@v1
         with:
@@ -62,7 +64,8 @@ jobs:
 
       - uses: actions-rs/cargo@v1
         with:
-          command: test --package ${{ matrix.test }}
+          command: test
+          # command: test --package ${{ matrix.test }}
         env:
           RUST_LOG: "trace"
           REDIS_URL: "redis://127.0.0.1:6379"
