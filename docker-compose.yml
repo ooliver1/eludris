@@ -46,8 +46,8 @@ services:
     volumes:
       - <<: *conf
     build:
-      context: ./pandemonium
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: pandemonium/Dockerfile
 
   effis:
     <<: *default-service

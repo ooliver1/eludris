@@ -3,8 +3,8 @@ FROM rust:slim-buster as builder
 
 WORKDIR /pandemonium
 
-COPY Cargo.lock Cargo.toml ./
-COPY ./src ./src
+COPY Cargo.lock pandemonium/Cargo.toml ./
+COPY ./pandemonium/src ./src
 
 # Remove docker's default of removing cache after use.
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
