@@ -101,7 +101,7 @@ async fn main() -> Result<(), anyhow::Error> {
     let pool = MySqlPool::connect(&db_url)
         .await
         .with_context(|| format!("Failed to connect to database on {}", db_url))?;
-    sqlx::migrate!()
+    sqlx::migrate!("../migrations")
         .run(&pool)
         .await
         .context("Failed to run migrations")?;

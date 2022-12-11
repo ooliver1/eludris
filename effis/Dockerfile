@@ -6,7 +6,7 @@ WORKDIR /effis
 COPY Cargo.lock effis/Cargo.toml ./
 COPY ./todel /todel
 COPY ./effis/src ./src
-COPY ./migrations ./migrations
+COPY ./migrations ../migrations
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/effis/target \
