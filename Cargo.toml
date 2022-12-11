@@ -2,6 +2,6 @@
 members = [
     "oprish",
     "pandemonium",
-    "todel",
     "effis",
+    "todel",
 ]
