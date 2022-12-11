@@ -17,9 +17,7 @@ RUN --mount=type=cache,target=/effis/target \
 
 FROM debian:buster-slim
 
-COPY --from=builder /usr/local/bin/effis /bin/effis
-
-COPY migrations ./migrations
+COPY ./wait-for-it.sh ./wait-for-it.sh
 
 # Don't forget to also publish these ports in the docker-compose.yml file.
 ARG PORT=7161
@@ -30,4 +28,6 @@ ENV ROCKET_PORT $PORT
 
 ENV RUST_LOG debug
 
-CMD ["/bin/effis"]
+COPY --from=builder /usr/local/bin/effis /bin/effis
+
+CMD ["./wait-for-it.sh", "mariadb:3306", "-t", "0", "--", "/bin/effis"]

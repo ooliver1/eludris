@@ -7,14 +7,6 @@ COPY Cargo.lock pandemonium/Cargo.toml ./
 COPY ./todel /todel
 COPY ./pandemonium/src ./src
 
-# Remove docker's default of removing cache after use.
-RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
-ENV PACKAGES libssl-dev pkg-config
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -yqq --no-install-recommends \
-    $PACKAGES && rm -rf /var/lib/apt/lists/*
-
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/pandemonium/target \
     cargo build --release
@@ -24,16 +16,8 @@ RUN --mount=type=cache,target=/pandemonium/target \
 
 FROM debian:buster-slim
 
-# Remove docker's default of removing cache after use.
-RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
-ENV PACKAGES libssl-dev pkg-config
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -yqq --no-install-recommends \
-    $PACKAGES && rm -rf /var/lib/apt/lists/*
-
-COPY --from=builder /usr/local/bin/pandemonium /bin/pandemonium
-
+COPY ./wait-for-it.sh ./wait-for-it.sh
+ 
 # Don't forget to also publish these ports in the docker-compose.yml file.
 ARG PORT=7160
 
@@ -43,4 +27,6 @@ ENV PANDEMONIUM_PORT $PORT
 
 ENV RUST_LOG debug
 
-CMD ["/bin/pandemonium"]
+COPY --from=builder /usr/local/bin/pandemonium /bin/pandemonium
+
+CMD ["./wait-for-it.sh", "mariadb:3306", "-t", "0", "--", "/bin/pandemonium"]
