@@ -34,7 +34,7 @@ pub struct Cache(Pool);
 fn rocket() -> Result<Rocket<Build>, anyhow::Error> {
     #[cfg(test)]
     {
-        env::set_var("ELUDRIS_CONF", "tests/Eludris.toml");
+        env::set_var("ELUDRIS_CONF", "../tests/Eludris.toml");
         dotenvy::dotenv().ok();
         env_logger::try_init().ok();
     }
