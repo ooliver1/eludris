@@ -17,3 +17,5 @@ rocket_db_pools = { version = "0.1.0-rc.2", features = ["deadpool_redis"] }
 dotenv = "0.15.0"
 anyhow = "1.0.66"
 tokio = { version = "1.22.0", features = ["rt-multi-thread", "macros"] }
+libloading = "0.7.4"
+plugins = { version = "0.1.0", path = "../plugins" }
