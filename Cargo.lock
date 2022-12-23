@@ -638,7 +638,7 @@ checksum = "03d8c417d7a8cb362e0c37e5d815f5eb7c37f79ff93707329d5a194e42e54ca0"
 
 [[package]]
 name = "effis"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "dotenvy",
@@ -1530,7 +1530,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
 name = "oprish"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "deadpool-redis",
@@ -1553,7 +1553,7 @@ checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 
 [[package]]
 name = "pandemonium"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "deadpool-redis",

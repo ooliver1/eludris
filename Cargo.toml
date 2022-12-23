@@ -5,3 +5,7 @@ members = [
     "effis",
     "todel",
 ]
+
+[workspace.package]
+version = "0.3.1"
+documentation = "https://eludris.github.io/docs"
