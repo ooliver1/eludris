@@ -7,7 +7,7 @@ use todel::{http::ClientIP, models::InstanceInfo, Conf};
 
 use crate::{
     ratelimit::{RatelimitedRouteResponse, Ratelimiter},
-    Cache,
+    Cache, VERSION,
 }; // poggers
 
 #[get("/")]
@@ -20,11 +20,12 @@ pub async fn index(
     ratelimiter.process_ratelimit(&mut cache).await?;
     ratelimiter.wrap_response(Json(InstanceInfo {
         instance_name: conf.instance_name.clone(),
+        version: VERSION,
         description: conf.description.clone(),
         message_limit: conf.oprish.message_limit,
-        oprish_url: conf.oprish.url.clone(),
-        pandemonium_url: conf.pandemonium.url.clone(),
-        effis_url: conf.effis.url.clone(),
+        oprish_url: &conf.oprish.url,
+        pandemonium_url: &conf.pandemonium.url,
+        effis_url: &conf.effis.url,
         file_size: conf.effis.file_size,
         attachment_file_size: conf.effis.attachment_file_size,
     }))

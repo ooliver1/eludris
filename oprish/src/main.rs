@@ -16,6 +16,8 @@ use rocket_db_pools::Database;
 use routes::*;
 use todel::Conf;
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 #[derive(Database)]
 #[database("cache")]
 pub struct Cache(deadpool_redis::Pool);
