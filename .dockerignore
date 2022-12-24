@@ -2,7 +2,10 @@
 !Cargo*
 !migrations/
 !oprish/
+oprish/Dockerfile
 !pandemonium/
-!todel/
+pandemonium/Dockerfile
 !effis/
+effis/Dockerfile
+!todel/
 !wait-for-it.sh

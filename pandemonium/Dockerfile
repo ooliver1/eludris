@@ -3,16 +3,21 @@ FROM rust:slim-buster as builder
 
 WORKDIR /pandemonium
 
-COPY Cargo.lock pandemonium/Cargo.toml ./
+COPY ./Cargo.toml /Cargo.toml
+COPY ./oprish/Cargo.toml /oprish/Cargo.toml
+COPY ./effis/Cargo.toml /effis/Cargo.toml
 COPY ./todel /todel
-COPY ./pandemonium/src ./src
+COPY ./pandemonium .
+
+RUN mkdir /oprish/src /effis/src
+RUN touch /oprish/src/main.rs /effis/src/main.rs
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/pandemonium/target \
+    --mount=type=cache,target=/target \
     cargo build --release
 # Other image cannot access the target folder.
-RUN --mount=type=cache,target=/pandemonium/target \
-    cp ./target/release/pandemonium /usr/local/bin/pandemonium
+RUN --mount=type=cache,target=/target \
+    cp /target/release/pandemonium /usr/local/bin/pandemonium
 
 FROM debian:buster-slim
 

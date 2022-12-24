@@ -3,16 +3,21 @@ FROM rust:slim-buster as builder
 
 WORKDIR /oprish
 
-COPY Cargo.lock oprish/Cargo.toml ./
+COPY ./Cargo.toml /Cargo.toml
+COPY ./pandemonium/Cargo.toml /pandemonium/Cargo.toml
+COPY ./effis/Cargo.toml /effis/Cargo.toml
 COPY ./todel /todel
-COPY ./oprish/src ./src
+COPY ./oprish .
+
+RUN mkdir /pandemonium/src /effis/src
+RUN touch /pandemonium/src/main.rs /effis/src/main.rs
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/oprish/target \
+    --mount=type=cache,target=/target \
     cargo build --release
 # Other image cannot access the target folder.
-RUN --mount=type=cache,target=/oprish/target \
-    cp ./target/release/oprish /usr/local/bin/oprish
+RUN --mount=type=cache,target=/target \
+    cp /target/release/oprish /usr/local/bin/oprish
 
 FROM debian:buster-slim
 
