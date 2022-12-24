@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::{rocket, Cache};
+    use crate::{rocket, Cache, VERSION};
     use deadpool_redis::Connection;
     use rocket::{futures::StreamExt, http::Status, local::asynchronous::Client};
     use todel::{
@@ -18,11 +18,12 @@ mod tests {
             response.into_string().await.unwrap(),
             serde_json::to_string(&InstanceInfo {
                 instance_name: conf.instance_name.clone(),
+                version: VERSION,
                 description: conf.description.clone(),
                 message_limit: conf.oprish.message_limit,
-                oprish_url: conf.oprish.url.clone(),
-                pandemonium_url: conf.pandemonium.url.clone(),
-                effis_url: conf.effis.url.clone(),
+                oprish_url: &conf.oprish.url,
+                pandemonium_url: &conf.pandemonium.url,
+                effis_url: &conf.effis.url,
                 file_size: conf.effis.file_size,
                 attachment_file_size: conf.effis.attachment_file_size,
             })
