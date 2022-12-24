@@ -10,7 +10,7 @@ projects with mind, add it to your own project either by:
 - Using `cargo add`
 
   ```sh
-  cargo add --git https://github.com/eludris/todel
+  cargo add --git https://github.com/eludris/eludris todel
   ```
 
 - Adding the following line to your `Cargo.toml`
