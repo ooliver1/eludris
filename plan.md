@@ -1,3 +1,6 @@
+# You should not be reading this file 
+## Instead, check out the [docs](https://eludris.github.io/docs/). 
+
 # Eludris
 
 This markdown file is dedicated to explaining and organising how the features and components of Eludris will work.
