@@ -3,14 +3,15 @@ FROM rust:slim-buster as builder
 
 WORKDIR /oprish
 
-COPY ./Cargo.toml /Cargo.toml
+# Cargo workspace "necessities"
 COPY ./pandemonium/Cargo.toml /pandemonium/Cargo.toml
 COPY ./effis/Cargo.toml /effis/Cargo.toml
-COPY ./todel /todel
-COPY ./oprish .
-
 RUN mkdir /pandemonium/src /effis/src
 RUN touch /pandemonium/src/main.rs /effis/src/main.rs
+
+COPY ./Cargo.toml /Cargo.toml
+COPY ./todel /todel
+COPY ./oprish .
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/target \
@@ -21,7 +22,7 @@ RUN --mount=type=cache,target=/target \
 
 FROM debian:buster-slim
 
-COPY ./wait-for-it.sh ./wait-for-it.sh
+COPY ./wait-for-it.sh ./
 
 # Don't forget to also publish these ports in the docker-compose.yml file.
 ARG PORT=7159
