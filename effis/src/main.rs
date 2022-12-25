@@ -5,7 +5,7 @@ mod cors;
 mod ratelimit;
 mod routes;
 
-use std::env;
+use std::{env, path::Path};
 
 use anyhow::Context;
 
@@ -106,24 +106,7 @@ async fn main() -> Result<(), anyhow::Error> {
         .await
         .context("Failed to run migrations")?;
 
-    if fs::read_dir("files").await.is_err() {
-        fs::create_dir("files")
-            .await
-            .context("Failed to create files directory")?;
-    }
-    if fs::read_dir("files/static").await.is_err() {
-        fs::create_dir("files/static")
-            .await
-            .context("Failed to create files/static directory")?;
-    }
-    for dir in BUCKETS.iter() {
-        let dir = format!("files/{dir}");
-        if fs::read_dir(&dir).await.is_err() {
-            fs::create_dir(&dir)
-                .await
-                .with_context(|| format!("Failed to create {} directory", dir))?;
-        }
-    }
+    create_file_dirs().await?;
 
     let _ = rocket()?
         .launch()
@@ -131,4 +114,19 @@ async fn main() -> Result<(), anyhow::Error> {
         .context("Encountered an error while running Rest API")?;
 
     Ok(())
+}
+
+async fn create_file_dirs() -> Result<(), anyhow::Error> {
+    try_create_dir("files").await?;
+    try_create_dir("files/static").await?;
+    for dir in BUCKETS.iter() {
+        try_create_dir(format!("files/{dir}")).await?;
+    }
+    Ok(())
+}
+
+async fn try_create_dir(path: impl AsRef<Path>) -> Result<(), anyhow::Error> {
+    fs::create_dir(&path)
+        .await
+        .with_context(|| format!("Failed to create {} directory", path.as_ref().display()))
 }
