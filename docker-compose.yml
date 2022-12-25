@@ -34,8 +34,8 @@ services:
     volumes:
       - <<: *conf
     build:
-      context: ./oprish
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: oprish/Dockerfile
     pull_policy: build
 
   pandemonium:
@@ -47,8 +47,8 @@ services:
     volumes:
       - <<: *conf
     build:
-      context: ./pandemonium
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: pandemonium/Dockerfile
     pull_policy: build
 
   effis:
@@ -61,8 +61,8 @@ services:
       - <<: *conf
       - "./files:/files"
     build:
-      context: ./effis
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: effis/Dockerfile
     pull_policy: build
 
   keydb:
