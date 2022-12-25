@@ -27,6 +27,7 @@ pub struct RatelimitHeaderWrapper<T> {
     pub ratelimit_sent_bytes: Header<'static>,
 }
 
+/// A simple struct that can do HTTP ratelimiting
 #[derive(Debug)]
 pub struct Ratelimiter {
     key: String,
