@@ -1,7 +1,7 @@
 use std::{io::ErrorKind, path::Path};
 
 use crate::{
-    ratelimit::{RatelimitedRouteResponse, Ratelimiter},
+    ratelimit::{RateLimitedRouteResponse, RateLimiter},
     Cache,
 };
 use rocket::{
@@ -25,8 +25,8 @@ pub async fn fetch_static_file<'a>(
     ip: ClientIP,
     mut cache: Connection<Cache>,
     conf: &State<Conf>,
-) -> RatelimitedRouteResponse<FetchResponse<'a>> {
-    let mut ratelimiter = Ratelimiter::new("fetch_file", "static", ip, conf.inner());
+) -> RateLimitedRouteResponse<FetchResponse<'a>> {
+    let mut ratelimiter = RateLimiter::new("fetch_file", "static", ip, conf.inner());
     ratelimiter.process_ratelimit(0, &mut cache).await?;
     let path = Path::new(name).file_name().map(Path::new).ok_or_else(|| {
         ratelimiter
@@ -92,8 +92,8 @@ pub async fn download_static_file<'a>(
     ip: ClientIP,
     mut cache: Connection<Cache>,
     conf: &State<Conf>,
-) -> RatelimitedRouteResponse<Result<FetchResponse<'a>, ErrorResponse>> {
-    let mut ratelimiter = Ratelimiter::new("fetch_file", "static", ip, conf.inner());
+) -> RateLimitedRouteResponse<Result<FetchResponse<'a>, ErrorResponse>> {
+    let mut ratelimiter = RateLimiter::new("fetch_file", "static", ip, conf.inner());
     ratelimiter.process_ratelimit(0, &mut cache).await?;
     let path = Path::new(name).file_name().map(Path::new).ok_or_else(|| {
         ratelimiter

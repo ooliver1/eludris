@@ -9,7 +9,7 @@ use todel::{
 use tokio::sync::Mutex;
 
 use crate::{
-    ratelimit::{RatelimitedRouteResponse, Ratelimiter},
+    ratelimit::{RateLimitedRouteResponse, RateLimiter},
     Cache, DB,
 };
 
@@ -21,8 +21,8 @@ pub async fn upload<'a>(
     mut db: Connection<DB>,
     conf: &State<Conf>,
     gen: &State<Mutex<IDGenerator>>,
-) -> RatelimitedRouteResponse<Json<FileData>> {
-    let mut ratelimiter = Ratelimiter::new("attachments", "attachments", ip, conf.inner());
+) -> RateLimitedRouteResponse<Json<FileData>> {
+    let mut ratelimiter = RateLimiter::new("attachments", "attachments", ip, conf.inner());
     ratelimiter
         .process_ratelimit(upload.file.len(), &mut cache)
         .await?;
@@ -57,8 +57,8 @@ pub async fn fetch<'a>(
     mut cache: Connection<Cache>,
     mut db: Connection<DB>,
     conf: &State<Conf>,
-) -> RatelimitedRouteResponse<FetchResponse<'a>> {
-    let mut ratelimiter = Ratelimiter::new("fetch_file", "attachments", ip, conf.inner());
+) -> RateLimitedRouteResponse<FetchResponse<'a>> {
+    let mut ratelimiter = RateLimiter::new("fetch_file", "attachments", ip, conf.inner());
     ratelimiter.process_ratelimit(0, &mut cache).await?;
     let file = File::fetch_file(id, "attachments", &mut db)
         .await
@@ -73,8 +73,8 @@ pub async fn fetch_download<'a>(
     mut cache: Connection<Cache>,
     mut db: Connection<DB>,
     conf: &State<Conf>,
-) -> RatelimitedRouteResponse<FetchResponse<'a>> {
-    let mut ratelimiter = Ratelimiter::new("fetch_file", "attachments", ip, conf.inner());
+) -> RateLimitedRouteResponse<FetchResponse<'a>> {
+    let mut ratelimiter = RateLimiter::new("fetch_file", "attachments", ip, conf.inner());
     ratelimiter.process_ratelimit(0, &mut cache).await?;
     let file = File::fetch_file_download(id, "attachments", &mut db)
         .await
@@ -89,8 +89,8 @@ pub async fn fetch_data<'a>(
     mut cache: Connection<Cache>,
     mut db: Connection<DB>,
     conf: &State<Conf>,
-) -> RatelimitedRouteResponse<Json<FileData>> {
-    let mut ratelimiter = Ratelimiter::new("fetch_file", "attachments", ip, conf.inner());
+) -> RateLimitedRouteResponse<Json<FileData>> {
+    let mut ratelimiter = RateLimiter::new("fetch_file", "attachments", ip, conf.inner());
     ratelimiter.process_ratelimit(0, &mut cache).await?;
     let file = File::fetch_file_data(id, "attachments", &mut db)
         .await

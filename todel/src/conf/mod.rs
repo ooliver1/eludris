@@ -34,7 +34,7 @@ pub struct OprishConf {
     pub message_limit: usize,
     pub url: String,
     #[serde(default)]
-    pub ratelimits: OprishRatelimits,
+    pub ratelimits: OprishRateLimits,
 }
 
 impl Default for OprishConf {
@@ -42,7 +42,7 @@ impl Default for OprishConf {
         Self {
             url: "https://example.com".to_string(),
             message_limit: message_limit_default(),
-            ratelimits: OprishRatelimits::default(),
+            ratelimits: OprishRateLimits::default(),
         }
     }
 }
@@ -56,7 +56,7 @@ fn message_limit_default() -> usize {
 pub struct PandemoniumConf {
     pub url: String,
     #[serde(default = "pandemonium_ratelimit_default")]
-    pub ratelimit: RatelimitConf,
+    pub ratelimit: RateLimitConf,
 }
 
 impl Default for PandemoniumConf {
@@ -68,8 +68,8 @@ impl Default for PandemoniumConf {
     }
 }
 
-fn pandemonium_ratelimit_default() -> RatelimitConf {
-    RatelimitConf {
+fn pandemonium_ratelimit_default() -> RateLimitConf {
+    RateLimitConf {
         reset_after: 10,
         limit: 5,
     }
@@ -86,7 +86,7 @@ pub struct EffisConf {
     pub attachment_file_size: u64,
     pub url: String,
     #[serde(default)]
-    pub ratelimits: EffisRatelimits,
+    pub ratelimits: EffisRateLimits,
 }
 
 fn file_size_default() -> u64 {
@@ -103,14 +103,14 @@ impl Default for EffisConf {
             file_size: file_size_default(),
             url: "https://example.com".to_string(),
             attachment_file_size: attachment_file_size_default(),
-            ratelimits: EffisRatelimits::default(),
+            ratelimits: EffisRateLimits::default(),
         }
     }
 }
 
-/// Ratelimit config data.
+/// RateLimit config data.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RatelimitConf {
+pub struct RateLimitConf {
     pub reset_after: u32,
     pub limit: u32,
 }
@@ -121,7 +121,7 @@ macro_rules! validate_ratelimit_limits {
         if $(
             $ratelimits.$bucket_name.limit == 0
             )||+ {
-            bail!("Ratelimit limit can't be 0");
+            bail!("RateLimit limit can't be 0");
         }
     };
 }
@@ -251,8 +251,8 @@ mod tests {
             instance_name: "WooChat".to_string(),
             description: Some("The poggest place to chat".to_string()),
             oprish: OprishConf {
-                ratelimits: OprishRatelimits {
-                    info: RatelimitConf {
+                ratelimits: OprishRateLimits {
+                    info: RateLimitConf {
                         reset_after: 10,
                         limit: 2,
                     },
@@ -261,7 +261,7 @@ mod tests {
                 ..Default::default()
             },
             pandemonium: PandemoniumConf {
-                ratelimit: RatelimitConf {
+                ratelimit: RateLimitConf {
                     reset_after: 20,
                     limit: 10,
                 },
@@ -269,8 +269,8 @@ mod tests {
             },
             effis: EffisConf {
                 file_size: 100_000_000,
-                ratelimits: EffisRatelimits {
-                    attachments: EffisRatelimitConf {
+                ratelimits: EffisRateLimits {
+                    attachments: EffisRateLimitConf {
                         reset_after: 600,
                         limit: 20,
                         file_size_limit: 500_000_000,

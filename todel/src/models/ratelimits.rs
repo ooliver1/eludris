@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::conf::{EffisRatelimits, OprishRatelimits, RatelimitConf};
+use crate::conf::{EffisRateLimits, OprishRateLimits, RateLimitConf};
 
 /// The type which represents all of an instance's ratelimit configuration
 #[derive(Debug, Serialize, Deserialize)]
-pub struct InstanceRatelimits {
-    pub oprish: OprishRatelimits,
-    pub pandemonium: RatelimitConf,
-    pub effis: EffisRatelimits,
+pub struct InstanceRateLimits {
+    pub oprish: OprishRateLimits,
+    pub pandemonium: RateLimitConf,
+    pub effis: EffisRateLimits,
 }

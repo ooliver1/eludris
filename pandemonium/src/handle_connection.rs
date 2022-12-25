@@ -18,7 +18,7 @@ use tokio_tungstenite::tungstenite::protocol::CloseFrame;
 use tokio_tungstenite::tungstenite::Message as WebSocketMessage;
 use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
 
-use crate::ratelimit::Ratelimiter;
+use crate::ratelimit::RateLimiter;
 use crate::utils::deserialize_message;
 
 /// The duration it takes for a connection to be inactive in for it to be regarded as zombified and
@@ -79,7 +79,7 @@ pub async fn handle_connection(
         }
     };
 
-    let mut ratelimiter = Ratelimiter::new(
+    let mut ratelimiter = RateLimiter::new(
         cache,
         rl_address,
         Duration::from_secs(conf.pandemonium.ratelimit.reset_after as u64),

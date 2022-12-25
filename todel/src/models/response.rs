@@ -13,8 +13,8 @@ pub struct ErrorResponse {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ErrorData {
-    RatelimitedError(RatelimitError),
-    FileSizeRatelimitedError(FileSizeRatelimitedError),
+    RateLimitedError(RateLimitError),
+    FileSizeRateLimitedError(FileSizeRateLimitedError),
     ValidationError(ValidationError),
     NotFoundError(NotFoundError),
     ServerError(ServerError),
@@ -22,14 +22,14 @@ pub enum ErrorData {
 
 /// The error when a client is ratelimited
 #[derive(Debug, Serialize, Deserialize)]
-pub struct RatelimitError {
+pub struct RateLimitError {
     pub retry_after: u64,
 }
 
 /// The error caused when a client surpasses the maximum amount of bytes in an Effis ratelimit
 /// bucket
 #[derive(Debug, Serialize, Deserialize)]
-pub struct FileSizeRatelimitedError {
+pub struct FileSizeRateLimitedError {
     pub retry_after: u64,
     pub bytes_left: u64,
 }
@@ -58,23 +58,23 @@ pub trait ErrorResponseData {
 }
 
 #[cfg(feature = "logic")]
-impl ErrorResponseData for RatelimitError {
+impl ErrorResponseData for RateLimitError {
     fn to_error_response(self) -> ErrorResponse {
         ErrorResponse {
             status: 429,
             message: "You have been ratelimited".to_string(),
-            data: Some(ErrorData::RatelimitedError(self)),
+            data: Some(ErrorData::RateLimitedError(self)),
         }
     }
 }
 
 #[cfg(feature = "logic")]
-impl ErrorResponseData for FileSizeRatelimitedError {
+impl ErrorResponseData for FileSizeRateLimitedError {
     fn to_error_response(self) -> ErrorResponse {
         ErrorResponse {
             status: 429,
             message: "You have surpassed your file size limit".to_string(),
-            data: Some(ErrorData::FileSizeRatelimitedError(self)),
+            data: Some(ErrorData::FileSizeRateLimitedError(self)),
         }
     }
 }

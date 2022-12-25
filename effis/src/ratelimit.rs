@@ -6,18 +6,18 @@ use std::{
 use rocket::{http::Header, response::Responder};
 use rocket_db_pools::{deadpool_redis::redis::AsyncCommands, Connection};
 use todel::{
-    models::{ErrorResponse, ErrorResponseData, FileSizeRatelimitedError, RatelimitError},
+    models::{ErrorResponse, ErrorResponseData, FileSizeRateLimitedError, RateLimitError},
     Conf,
 };
 
 use crate::Cache;
 
-pub type RatelimitedRouteResponse<T> =
-    Result<RatelimitHeaderWrapper<T>, RatelimitHeaderWrapper<ErrorResponse>>;
+pub type RateLimitedRouteResponse<T> =
+    Result<RateLimitHeaderWrapper<T>, RateLimitHeaderWrapper<ErrorResponse>>;
 
 /// The necessary headers for responses
 #[derive(Debug, Responder)]
-pub struct RatelimitHeaderWrapper<T> {
+pub struct RateLimitHeaderWrapper<T> {
     pub inner: T,
     pub ratelimit_reset: Header<'static>,
     pub ratelimit_max: Header<'static>,
@@ -29,7 +29,7 @@ pub struct RatelimitHeaderWrapper<T> {
 
 /// A simple struct that can do HTTP ratelimiting
 #[derive(Debug)]
-pub struct Ratelimiter {
+pub struct RateLimiter {
     key: String,
     reset_after: Duration,
     request_limit: u32,
@@ -39,9 +39,9 @@ pub struct Ratelimiter {
     sent_bytes: u64,
 }
 
-impl Ratelimiter {
-    /// Creates a new Ratelimiter
-    pub fn new<I>(bucket: &str, attachment_bucket: &str, identifier: I, conf: &Conf) -> Ratelimiter
+impl RateLimiter {
+    /// Creates a new RateLimiter
+    pub fn new<I>(bucket: &str, attachment_bucket: &str, identifier: I, conf: &Conf) -> RateLimiter
     where
         I: Display,
     {
@@ -80,7 +80,7 @@ impl Ratelimiter {
         &mut self,
         bytes: u64,
         cache: &mut Connection<Cache>,
-    ) -> Result<(), RatelimitHeaderWrapper<ErrorResponse>> {
+    ) -> Result<(), RateLimitHeaderWrapper<ErrorResponse>> {
         let now = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap_or(Duration::ZERO)
@@ -89,7 +89,7 @@ impl Ratelimiter {
         if bytes > self.file_size_limit {
             return Err(self
                 .wrap_response::<_, ()>(
-                    FileSizeRatelimitedError {
+                    FileSizeRateLimitedError {
                         retry_after: self.last_reset + self.reset_after.as_millis() as u64 - now,
                         bytes_left: self.file_size_limit - self.sent_bytes,
                     }
@@ -127,10 +127,10 @@ impl Ratelimiter {
                 log::debug!("Reset bucket for {}", self.key);
             }
             if self.request_count >= self.request_limit {
-                log::info!("Ratelimited bucket {}", self.key);
+                log::info!("Rate limited bucket {}", self.key);
                 Err(self
                     .wrap_response::<_, ()>(
-                        RatelimitError {
+                        RateLimitError {
                             retry_after: self.last_reset + self.reset_after.as_millis() as u64
                                 - now,
                         }
@@ -140,7 +140,7 @@ impl Ratelimiter {
             } else if self.sent_bytes + bytes > self.file_size_limit {
                 Err(self
                     .wrap_response::<_, ()>(
-                        FileSizeRatelimitedError {
+                        FileSizeRateLimitedError {
                             retry_after: self.last_reset + self.reset_after.as_millis() as u64
                                 - now,
                             bytes_left: self.file_size_limit - self.sent_bytes,
@@ -178,28 +178,28 @@ impl Ratelimiter {
         }
     }
 
-    pub fn wrap_response<T, E>(&self, data: T) -> Result<RatelimitHeaderWrapper<T>, E> {
-        Ok(RatelimitHeaderWrapper {
+    pub fn wrap_response<T, E>(&self, data: T) -> Result<RateLimitHeaderWrapper<T>, E> {
+        Ok(RateLimitHeaderWrapper {
             inner: data,
             ratelimit_reset: Header::new(
-                "X-Ratelimit-Reset",
+                "X-RateLimit-Reset",
                 self.reset_after.as_millis().to_string(),
             ),
-            ratelimit_max: Header::new("X-Ratelimit-Max", self.request_limit.to_string()),
+            ratelimit_max: Header::new("X-RateLimit-Max", self.request_limit.to_string()),
             ratelimit_bytes_limit: Header::new(
-                "X-Ratelimit-Bytes-Left",
+                "X-RateLimit-Bytes-Left",
                 self.file_size_limit.to_string(),
             ),
             ratelimit_last_reset: Header::new(
-                "X-Ratelimit-Last-Reset",
+                "X-RateLimit-Last-Reset",
                 self.last_reset.to_string(),
             ),
             ratelimit_request_count: Header::new(
-                "X-Ratelimit-Request-Count",
+                "X-RateLimit-Request-Count",
                 self.request_count.to_string(),
             ),
             ratelimit_sent_bytes: Header::new(
-                "X-Ratelimit-Sent-Bytes",
+                "X-RateLimit-Sent-Bytes",
                 self.sent_bytes.to_string(),
             ),
         })

@@ -1,51 +1,51 @@
 use serde::{Deserialize, Deserializer, Serialize};
 use ubyte::ByteUnit;
 
-use super::RatelimitConf;
+use super::RateLimitConf;
 
 /// Effis ratelimit data config.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EffisRatelimits {
+pub struct EffisRateLimits {
     #[serde(default = "assets_default")]
-    pub assets: EffisRatelimitConf,
+    pub assets: EffisRateLimitConf,
     #[serde(default = "attachments_default")]
-    pub attachments: EffisRatelimitConf,
+    pub attachments: EffisRateLimitConf,
     #[serde(default = "fetch_file_default")]
-    pub fetch_file: RatelimitConf,
+    pub fetch_file: RateLimitConf,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EffisRatelimitConf {
+pub struct EffisRateLimitConf {
     pub reset_after: u32,
     pub limit: u32,
     #[serde(deserialize_with = "deserialize_file_size")]
     pub file_size_limit: u64,
 }
 
-fn assets_default() -> EffisRatelimitConf {
-    EffisRatelimitConf {
+fn assets_default() -> EffisRateLimitConf {
+    EffisRateLimitConf {
         reset_after: 60,
         limit: 5,
         file_size_limit: 30_000_000, // 30MB
     }
 }
 
-fn attachments_default() -> EffisRatelimitConf {
-    EffisRatelimitConf {
+fn attachments_default() -> EffisRateLimitConf {
+    EffisRateLimitConf {
         reset_after: 180,
         limit: 20,
         file_size_limit: 500_000_000, // 500MB
     }
 }
 
-fn fetch_file_default() -> RatelimitConf {
-    RatelimitConf {
+fn fetch_file_default() -> RateLimitConf {
+    RateLimitConf {
         reset_after: 60,
         limit: 30,
     }
 }
 
-impl Default for EffisRatelimits {
+impl Default for EffisRateLimits {
     fn default() -> Self {
         Self {
             assets: assets_default(),

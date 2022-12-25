@@ -8,17 +8,17 @@ use deadpool_redis::redis::AsyncCommands;
 use rocket::http::Header;
 use rocket_db_pools::Connection;
 use todel::{
-    models::{ErrorResponse, ErrorResponseData, RatelimitError},
+    models::{ErrorResponse, ErrorResponseData, RateLimitError},
     Conf,
 };
 
-pub type RatelimitedRouteResponse<T> =
-    Result<RatelimitHeaderWrapper<T>, RatelimitHeaderWrapper<ErrorResponse>>;
+pub type RateLimitedRouteResponse<T> =
+    Result<RateLimitHeaderWrapper<T>, RateLimitHeaderWrapper<ErrorResponse>>;
 
 /// The necessary headers for responses
 #[derive(Debug, Responder)]
 #[response(content_type = "json")]
-pub struct RatelimitHeaderWrapper<T> {
+pub struct RateLimitHeaderWrapper<T> {
     pub inner: T,
     pub ratelimit_reset: Header<'static>,
     pub ratelimit_max: Header<'static>,
@@ -27,10 +27,10 @@ pub struct RatelimitHeaderWrapper<T> {
 }
 
 // Can derive debug :chad:
-/// A simple Ratelimiter than can keep track of ratelimit data from KeyDB and add ratelimit
+/// A simple RateLimiter than can keep track of ratelimit data from KeyDB and add ratelimit
 /// related headers to a response type
 #[derive(Debug)]
-pub struct Ratelimiter {
+pub struct RateLimiter {
     key: String,
     reset_after: Duration,
     request_limit: u32,
@@ -38,9 +38,9 @@ pub struct Ratelimiter {
     last_reset: u64,
 }
 
-impl Ratelimiter {
-    /// Creates a new Ratelimiter
-    pub fn new<I>(bucket: &str, identifier: I, conf: &Conf) -> Ratelimiter
+impl RateLimiter {
+    /// Creates a new RateLimiter
+    pub fn new<I>(bucket: &str, identifier: I, conf: &Conf) -> RateLimiter
     where
         I: Display,
     {
@@ -50,7 +50,7 @@ impl Ratelimiter {
             "ratelimits" => &conf.oprish.ratelimits.ratelimits,
             _ => unreachable!(),
         };
-        Ratelimiter {
+        RateLimiter {
             key: format!("ratelimit:{}:{}", identifier, bucket),
             reset_after: Duration::from_secs(ratelimit.reset_after as u64),
             request_limit: ratelimit.limit,
@@ -63,7 +63,7 @@ impl Ratelimiter {
     pub async fn process_ratelimit(
         &mut self,
         cache: &mut Connection<Cache>,
-    ) -> Result<(), RatelimitHeaderWrapper<ErrorResponse>> {
+    ) -> Result<(), RateLimitHeaderWrapper<ErrorResponse>> {
         let now = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap_or(Duration::ZERO)
@@ -96,10 +96,10 @@ impl Ratelimiter {
                 log::debug!("Reset bucket for {}", self.key);
             }
             if self.request_count >= self.request_limit {
-                log::info!("Ratelimited bucket {}", self.key);
+                log::info!("Rate limited bucket {}", self.key);
                 Err(self
                     .wrap_response::<_, ()>(
-                        RatelimitError {
+                        RateLimitError {
                             retry_after: self.last_reset + self.reset_after.as_millis() as u64
                                 - now,
                         }
@@ -127,21 +127,21 @@ impl Ratelimiter {
         }
     }
 
-    /// Wraps a response in a RatelimitHeaderWrapper which adds headers relavent to ratelimiting
-    pub fn wrap_response<T, E>(&self, data: T) -> Result<RatelimitHeaderWrapper<T>, E> {
-        Ok(RatelimitHeaderWrapper {
+    /// Wraps a response in a RateLimitHeaderWrapper which adds headers relavent to ratelimiting
+    pub fn wrap_response<T, E>(&self, data: T) -> Result<RateLimitHeaderWrapper<T>, E> {
+        Ok(RateLimitHeaderWrapper {
             inner: data,
             ratelimit_reset: Header::new(
-                "X-Ratelimit-Reset",
+                "X-RateLimit-Reset",
                 self.reset_after.as_millis().to_string(),
             ),
-            ratelimit_max: Header::new("X-Ratelimit-Max", self.request_limit.to_string()),
+            ratelimit_max: Header::new("X-RateLimit-Max", self.request_limit.to_string()),
             ratelimit_last_reset: Header::new(
-                "X-Ratelimit-Last-Reset",
+                "X-RateLimit-Last-Reset",
                 self.last_reset.to_string(),
             ),
             ratelimit_request_count: Header::new(
-                "X-Ratelimit-Request-Count",
+                "X-RateLimit-Request-Count",
                 self.request_count.to_string(),
             ),
         })

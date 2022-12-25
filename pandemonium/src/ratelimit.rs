@@ -5,8 +5,8 @@ use std::{
 
 use deadpool_redis::{redis::AsyncCommands, Connection};
 
-/// A simple Ratelimiter than can keep track of ratelimit data from KeyDB
-pub struct Ratelimiter {
+/// A simple RateLimiter than can keep track of ratelimit data from KeyDB
+pub struct RateLimiter {
     cache: Connection,
     key: String,
     reset_after: Duration,
@@ -15,18 +15,18 @@ pub struct Ratelimiter {
     last_reset: u64,
 }
 
-impl Ratelimiter {
-    /// Creates a new Ratelimiter
+impl RateLimiter {
+    /// Creates a new RateLimiter
     pub fn new<I>(
         cache: Connection,
         identifier: I,
         reset_after: Duration,
         request_limit: u32,
-    ) -> Ratelimiter
+    ) -> RateLimiter
     where
         I: Display,
     {
-        Ratelimiter {
+        RateLimiter {
             cache,
             key: format!("ratelimit:pandemonium:{}", identifier),
             reset_after,
@@ -68,7 +68,7 @@ impl Ratelimiter {
                 log::debug!("Reset bucket for {}", self.key);
             }
             if self.request_count >= self.request_limit {
-                log::info!("Ratelimited bucket {}", self.key);
+                log::info!("Rate limited bucket {}", self.key);
                 Err(())
             } else {
                 self.cache

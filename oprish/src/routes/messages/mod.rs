@@ -1,4 +1,4 @@
-use crate::ratelimit::{RatelimitedRouteResponse, Ratelimiter};
+use crate::ratelimit::{RateLimitedRouteResponse, RateLimiter};
 use crate::Cache;
 use deadpool_redis::redis::AsyncCommands;
 use rocket::serde::json::Json;
@@ -14,8 +14,8 @@ pub async fn index(
     address: ClientIP,
     mut cache: Connection<Cache>,
     conf: &State<Conf>,
-) -> RatelimitedRouteResponse<Result<Json<Message>, ErrorResponse>> {
-    let mut ratelimiter = Ratelimiter::new("message_create", address, conf.inner());
+) -> RateLimitedRouteResponse<Result<Json<Message>, ErrorResponse>> {
+    let mut ratelimiter = RateLimiter::new("message_create", address, conf.inner());
     ratelimiter.process_ratelimit(&mut cache).await?;
     let message = message.into_inner();
     if message.author.len() < 2 || message.author.len() > 32 {

@@ -6,7 +6,7 @@ use rocket_db_pools::Connection;
 use todel::{http::ClientIP, models::InstanceInfo, Conf};
 
 use crate::{
-    ratelimit::{RatelimitedRouteResponse, Ratelimiter},
+    ratelimit::{RateLimitedRouteResponse, RateLimiter},
     Cache, VERSION,
 }; // poggers
 
@@ -15,8 +15,8 @@ pub async fn index(
     address: ClientIP,
     mut cache: Connection<Cache>,
     conf: &State<Conf>,
-) -> RatelimitedRouteResponse<Json<InstanceInfo>> {
-    let mut ratelimiter = Ratelimiter::new("info", address, conf.inner());
+) -> RateLimitedRouteResponse<Json<InstanceInfo>> {
+    let mut ratelimiter = RateLimiter::new("info", address, conf.inner());
     ratelimiter.process_ratelimit(&mut cache).await?;
     ratelimiter.wrap_response(Json(InstanceInfo {
         instance_name: conf.instance_name.clone(),
