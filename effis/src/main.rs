@@ -126,7 +126,11 @@ async fn create_file_dirs() -> Result<(), anyhow::Error> {
 }
 
 async fn try_create_dir(path: impl AsRef<Path>) -> Result<(), anyhow::Error> {
-    fs::create_dir(&path)
-        .await
-        .with_context(|| format!("Failed to create {} directory", path.as_ref().display()))
+    if !path.as_ref().exists() {
+        fs::create_dir(&path)
+            .await
+            .with_context(|| format!("Failed to create {} directory", path.as_ref().display()))
+    } else {
+        Ok(())
+    }
 }
