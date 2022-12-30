@@ -24,13 +24,7 @@ FROM debian:buster-slim
 
 COPY ./wait-for-it.sh ./
 
-# Don't forget to also publish these ports in the docker-compose.yml file.
-ARG PORT=7159
-
-EXPOSE $PORT
 ENV ROCKET_ADDRESS 0.0.0.0
-ENV OPRISH_PORT $PORT
-
 ENV RUST_LOG debug
 
 COPY --from=builder /usr/local/bin/oprish /bin/oprish
