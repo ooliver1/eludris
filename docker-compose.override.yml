@@ -1,0 +1,50 @@
+version: "3"
+
+x-restart-policy:
+  &restart-policy
+  restart: unless-stopped
+
+services:
+  oprish:
+    <<: *restart-policy
+    depends_on: [ "mariadb", "keydb" ]
+
+    environment:
+      - DATABASE_URL=mysql://root:root@mariadb/eludris
+      - REDIS_URL=redis://keydb:6379
+    volumes:
+      - type: bind
+        source: Eludris.toml
+        target: /Eludris.toml
+    build:
+      context: .
+      dockerfile: oprish/Dockerfile
+    pull_policy: build
+
+  pandemonium:
+    extends:
+      service: oprish
+    build:
+      dockerfile: pandemonium/Dockerfile
+
+  effis:
+    extends:
+      service: oprish
+    build:
+      dockerfile: effis/Dockerfile
+
+  keydb:
+    <<: *restart-policy
+    image: eqalpha/keydb
+    volumes:
+      - "./keydb:/data"
+
+  mariadb:
+    <<: *restart-policy
+    image: mariadb:10-jammy
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: eludris
+    volumes:
+      - "./mariadb:/var/lib/mysql"

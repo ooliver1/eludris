@@ -1,82 +1,14 @@
 version: "3"
 
-x-conf:
-  &conf
-  type: bind
-  source: Eludris.toml
-  target: /Eludris.toml
-
-x-restart-policy:
-  &restart-policy
-  restart: unless-stopped
-
-x-needs-dbs:
-  &needs-dbs
-  depends_on: ["mariadb", "keydb"]
-
-x-dbs:
-  &dbs
-  DATABASE_URL: "mysql://root:root@mariadb/eludris"
-  REDIS_URL: "redis://keydb:6379"
-
-x-default-service:
-  &default-service
-  <<: *restart-policy
-  <<: *needs-dbs
-
 services:
   oprish:
-    <<: *default-service
-
-    environment: *dbs
     ports:
-      - "7159:7159"
-    volumes:
-      - <<: *conf
-    build:
-      context: .
-      dockerfile: oprish/Dockerfile
-    pull_policy: build
+      - ${OPRISH_PORT:-7159}:7159
 
   pandemonium:
-    <<: *default-service
-
-    environment: *dbs
     ports:
-      - "7160:7160"
-    volumes:
-      - <<: *conf
-    build:
-      context: .
-      dockerfile: pandemonium/Dockerfile
-    pull_policy: build
+      - ${PANDEMONIUM_PORT:-7160}:7160
 
   effis:
-    <<: *default-service
-
-    environment: *dbs
     ports:
-      - "7161:7161"
-    volumes:
-      - <<: *conf
-      - "./files:/files"
-    build:
-      context: .
-      dockerfile: effis/Dockerfile
-    pull_policy: build
-
-  keydb:
-    <<: *restart-policy
-    image: eqalpha/keydb
-    volumes:
-      - "./keydb:/data"
-
-  mariadb:
-    <<: *restart-policy
-    image: mariadb:10-jammy
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_ROOT_HOST: "%"
-      MYSQL_DATABASE: eludris
-    volumes:
-      - "./mariadb:/var/lib/mysql"
+      - ${EFFIS_PORT:-7161}:7161
