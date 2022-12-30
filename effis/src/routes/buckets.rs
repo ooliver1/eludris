@@ -13,7 +13,7 @@ use crate::{
     Cache, BUCKETS, DB,
 };
 
-#[post("/<bucket>", data = "<upload>", rank = 2)]
+#[post("/<bucket>", data = "<upload>")]
 pub async fn upload<'a>(
     bucket: &'a str,
     upload: Form<FileUpload<'a>>,
@@ -62,7 +62,7 @@ pub async fn upload<'a>(
     ratelimiter.wrap_response(Json(file))
 }
 
-#[get("/<bucket>/<id>", rank = 3)]
+#[get("/<bucket>/<id>")]
 pub async fn fetch<'a>(
     bucket: &'a str,
     id: u128,
@@ -90,7 +90,7 @@ pub async fn fetch<'a>(
     ratelimiter.wrap_response(file)
 }
 
-#[get("/<bucket>/<id>/download", rank = 3)]
+#[get("/<bucket>/<id>/download")]
 pub async fn fetch_download<'a>(
     bucket: &'a str,
     id: u128,
@@ -118,7 +118,7 @@ pub async fn fetch_download<'a>(
     ratelimiter.wrap_response(file)
 }
 
-#[get("/<bucket>/<id>/data", rank = 3)]
+#[get("/<bucket>/<id>/data")]
 pub async fn fetch_data<'a>(
     bucket: &'a str,
     id: u128,
