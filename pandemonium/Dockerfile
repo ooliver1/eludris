@@ -23,14 +23,8 @@ RUN --mount=type=cache,target=/target \
 FROM debian:buster-slim
 
 COPY ./wait-for-it.sh ./
- 
-# Don't forget to also publish these ports in the docker-compose.yml file.
-ARG PORT=7160
 
-EXPOSE $PORT
 ENV PANDEMONIUM_ADDRESS 0.0.0.0
-ENV PANDEMONIUM_PORT $PORT
-
 ENV RUST_LOG debug
 
 COPY --from=builder /usr/local/bin/pandemonium /bin/pandemonium
