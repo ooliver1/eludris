@@ -66,7 +66,7 @@ pub async fn fetch<'a>(
     ratelimiter.wrap_response(file)
 }
 
-#[get("/<id>/download", rank = 2)]
+#[get("/<id>/download")]
 pub async fn fetch_download<'a>(
     id: u128,
     ip: ClientIP,
@@ -82,7 +82,7 @@ pub async fn fetch_download<'a>(
     ratelimiter.wrap_response(file)
 }
 
-#[get("/<id>/data", rank = 2)]
+#[get("/<id>/data")]
 pub async fn fetch_data<'a>(
     id: u128,
     ip: ClientIP,

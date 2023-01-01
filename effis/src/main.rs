@@ -87,7 +87,8 @@ fn rocket() -> Result<Rocket<Build>, anyhow::Error> {
         .attach(DB::init())
         .attach(Cache::init())
         .attach(cors::Cors)
-        .mount("/", routes::routes()))
+        .mount("/", routes::routes())
+        .mount("/static/", routes::static_routes()))
 }
 
 #[rocket::main]

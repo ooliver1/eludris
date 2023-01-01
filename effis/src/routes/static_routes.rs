@@ -19,7 +19,7 @@ use todel::{
 };
 use tokio::fs::File;
 
-#[get("/static/<name>")]
+#[get("/<name>", rank = 1)]
 pub async fn fetch_static_file<'a>(
     name: &'a str,
     ip: ClientIP,
@@ -86,7 +86,7 @@ pub async fn fetch_static_file<'a>(
     })
 }
 
-#[get("/static/<name>/download")]
+#[get("/<name>/download", rank = 1)]
 pub async fn download_static_file<'a>(
     name: &'a str,
     ip: ClientIP,
