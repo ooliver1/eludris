@@ -9,6 +9,7 @@ pub struct FileData {
     pub id: u128,
     pub name: String,
     pub bucket: String,
+    #[serde(default = "spoiler_default")]
     #[serde(skip_serializing_if = "is_false")]
     pub spoiler: bool,
     pub metadata: FileMetadata,
@@ -16,6 +17,10 @@ pub struct FileData {
 
 fn is_false(value: &bool) -> bool {
     !value
+}
+
+fn spoiler_default() -> bool {
+    false
 }
 
 /// The enum representing all the possible Effis supported file metadatas
