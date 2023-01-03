@@ -104,7 +104,14 @@ mod file_logic {
         ) -> Result<FileData, ErrorResponse> {
             let id = gen.lock().await.generate_id();
             let path = PathBuf::from(format!("files/{}/{}", bucket, id));
-            let name = file.name().unwrap_or("attachment").to_string();
+            let name = match file.raw_name() {
+                Some(name) => PathBuf::from(name.dangerous_unsafe_unsanitized_raw().as_str())
+                    .file_name()
+                    .map(|n| n.to_str().unwrap_or("attachment"))
+                    .unwrap_or("attachment")
+                    .to_string(),
+                None => "attachment".to_string(),
+            };
             file.persist_to(&path).await.unwrap();
             let data = fs::read(&path).await.unwrap();
 
