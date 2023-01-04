@@ -3,7 +3,7 @@ use serde_with::{serde_as, DisplayFromStr};
 
 /// The data Effis provides for files
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileData {
     #[serde_as(as = "DisplayFromStr")]
     pub id: u128,
@@ -24,7 +24,7 @@ fn spoiler_default() -> bool {
 }
 
 /// The enum representing all the possible Effis supported file metadatas
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 #[serde(tag = "type")]
 pub enum FileMetadata {

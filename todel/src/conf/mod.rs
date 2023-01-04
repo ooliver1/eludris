@@ -15,7 +15,7 @@ pub use effis_ratelimits::*;
 pub use oprish_ratelimits::*;
 
 /// Eludris config.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Conf {
     pub instance_name: String,
     pub description: Option<String>,
@@ -28,7 +28,7 @@ pub struct Conf {
 }
 
 /// Oprish config.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OprishConf {
     #[serde(default = "message_limit_default")]
     pub message_limit: usize,
@@ -52,7 +52,7 @@ fn message_limit_default() -> usize {
 }
 
 /// Pandemonium config.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PandemoniumConf {
     pub url: String,
     #[serde(default = "pandemonium_ratelimit_default")]
@@ -76,7 +76,7 @@ fn pandemonium_ratelimit_default() -> RateLimitConf {
 }
 
 /// Effis config.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EffisConf {
     #[serde(deserialize_with = "deserialize_file_size")]
     #[serde(default = "file_size_default")]

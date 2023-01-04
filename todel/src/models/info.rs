@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// The instance info payload
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InstanceInfo<'a> {
     pub instance_name: String,
     pub description: Option<String>,
