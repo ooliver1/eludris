@@ -3,7 +3,7 @@ use ubyte::ByteUnit;
 
 use super::RateLimitConf;
 
-/// Effis ratelimit data config.
+/// Effis rate limit data config.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EffisRateLimits {
     #[serde(default = "assets_default")]

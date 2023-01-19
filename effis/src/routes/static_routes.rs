@@ -1,7 +1,7 @@
 use std::{io::ErrorKind, path::Path};
 
 use crate::{
-    ratelimit::{RateLimitedRouteResponse, RateLimiter},
+    rate_limit::{RateLimitedRouteResponse, RateLimiter},
     Cache,
 };
 use rocket::{
@@ -26,10 +26,10 @@ pub async fn fetch_static_file<'a>(
     mut cache: Connection<Cache>,
     conf: &State<Conf>,
 ) -> RateLimitedRouteResponse<FetchResponse<'a>> {
-    let mut ratelimiter = RateLimiter::new("fetch_file", "static", ip, conf.inner());
-    ratelimiter.process_ratelimit(0, &mut cache).await?;
+    let mut rate_limiter = RateLimiter::new("fetch_file", "static", ip, conf.inner());
+    rate_limiter.process_rate_limit(0, &mut cache).await?;
     let path = Path::new(name).file_name().map(Path::new).ok_or_else(|| {
-        ratelimiter
+        rate_limiter
             .wrap_response::<_, ()>(
                 ValidationError {
                     field_name: "name".to_string(),
@@ -42,7 +42,7 @@ pub async fn fetch_static_file<'a>(
     let extension = path.extension();
     let content_type = match extension {
         Some(extension) => ContentType::from_extension(extension.to_str().ok_or_else(|| {
-            ratelimiter
+            rate_limiter
                 .wrap_response::<_, ()>(
                     ValidationError {
                         field_name: "name".to_string(),
@@ -58,11 +58,11 @@ pub async fn fetch_static_file<'a>(
         .await
         .map_err(|e| {
             if e.kind() == ErrorKind::NotFound {
-                ratelimiter
+                rate_limiter
                     .wrap_response::<_, ()>(NotFoundError.to_error_response())
                     .unwrap()
             } else {
-                ratelimiter
+                rate_limiter
                     .wrap_response::<_, ()>(
                         ServerError {
                             error: "Failed to upload file".to_string(),
@@ -73,7 +73,7 @@ pub async fn fetch_static_file<'a>(
             }
         })?;
     log::info!("Fetched static file {}", name);
-    ratelimiter.wrap_response(FetchResponse {
+    rate_limiter.wrap_response(FetchResponse {
         file,
         disposition: Header::new(
             "Content-Disposition",
@@ -93,10 +93,10 @@ pub async fn download_static_file<'a>(
     mut cache: Connection<Cache>,
     conf: &State<Conf>,
 ) -> RateLimitedRouteResponse<Result<FetchResponse<'a>, ErrorResponse>> {
-    let mut ratelimiter = RateLimiter::new("fetch_file", "static", ip, conf.inner());
-    ratelimiter.process_ratelimit(0, &mut cache).await?;
+    let mut rate_limiter = RateLimiter::new("fetch_file", "static", ip, conf.inner());
+    rate_limiter.process_rate_limit(0, &mut cache).await?;
     let path = Path::new(name).file_name().map(Path::new).ok_or_else(|| {
-        ratelimiter
+        rate_limiter
             .wrap_response::<_, ()>(
                 ValidationError {
                     field_name: "name".to_string(),
@@ -109,7 +109,7 @@ pub async fn download_static_file<'a>(
     let extension = path.extension();
     let content_type = match extension {
         Some(extension) => ContentType::from_extension(extension.to_str().ok_or_else(|| {
-            ratelimiter
+            rate_limiter
                 .wrap_response::<_, ()>(
                     ValidationError {
                         field_name: "name".to_string(),
@@ -125,11 +125,11 @@ pub async fn download_static_file<'a>(
         .await
         .map_err(|e| {
             if e.kind() == ErrorKind::NotFound {
-                ratelimiter
+                rate_limiter
                     .wrap_response::<_, ()>(NotFoundError.to_error_response())
                     .unwrap()
             } else {
-                ratelimiter
+                rate_limiter
                     .wrap_response::<_, ()>(
                         ServerError {
                             error: "Failed to upload file".to_string(),
@@ -140,7 +140,7 @@ pub async fn download_static_file<'a>(
             }
         })?;
     log::info!("Fetched static file {}", name);
-    ratelimiter.wrap_response(Ok(FetchResponse {
+    rate_limiter.wrap_response(Ok(FetchResponse {
         file,
         disposition: Header::new(
             "Content-Disposition",

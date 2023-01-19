@@ -20,13 +20,13 @@ pub enum ErrorData {
     ServerError(ServerError),
 }
 
-/// The error when a client is ratelimited
+/// The error when a client is rate limited
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RateLimitError {
     pub retry_after: u64,
 }
 
-/// The error caused when a client surpasses the maximum amount of bytes in an Effis ratelimit
+/// The error caused when a client surpasses the maximum amount of bytes in an Effis rate limit
 /// bucket
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileSizeRateLimitedError {
@@ -62,7 +62,7 @@ impl ErrorResponseData for RateLimitError {
     fn to_error_response(self) -> ErrorResponse {
         ErrorResponse {
             status: 429,
-            message: "You have been ratelimited".to_string(),
+            message: "You have been rate limited".to_string(),
             data: Some(ErrorData::RateLimitedError(self)),
         }
     }

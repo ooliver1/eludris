@@ -2,7 +2,7 @@
 extern crate rocket;
 
 mod cors;
-mod ratelimit;
+mod rate_limit;
 mod routes;
 
 use std::{env, path::Path};

@@ -5,7 +5,7 @@ use std::{
 
 use deadpool_redis::{redis::AsyncCommands, Connection};
 
-/// A simple RateLimiter than can keep track of ratelimit data from KeyDB
+/// A simple RateLimiter than can keep track of rate limit data from KeyDB
 pub struct RateLimiter {
     cache: Connection,
     key: String,
@@ -28,7 +28,7 @@ impl RateLimiter {
     {
         RateLimiter {
             cache,
-            key: format!("ratelimit:pandemonium:{}", identifier),
+            key: format!("rate_limit:pandemonium:{}", identifier),
             reset_after,
             request_limit,
             request_count: 0,
@@ -36,8 +36,8 @@ impl RateLimiter {
         }
     }
 
-    /// Checks if a bucket is ratelimited
-    pub async fn process_ratelimit(&mut self) -> Result<(), ()> {
+    /// Checks if a bucket is rate limited
+    pub async fn process_rate_limit(&mut self) -> Result<(), ()> {
         let now = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap_or(Duration::ZERO)
@@ -50,7 +50,7 @@ impl RateLimiter {
                 ("last_reset", "request_count"),
             )
             .await
-            .expect("Coudln't query cache")
+            .expect("Couldn't query cache")
         {
             self.last_reset = last_reset;
             self.request_count = request_count;

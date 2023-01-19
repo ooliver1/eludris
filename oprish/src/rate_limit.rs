@@ -20,14 +20,14 @@ pub type RateLimitedRouteResponse<T> =
 #[response(content_type = "json")]
 pub struct RateLimitHeaderWrapper<T> {
     pub inner: T,
-    pub ratelimit_reset: Header<'static>,
-    pub ratelimit_max: Header<'static>,
-    pub ratelimit_last_reset: Header<'static>,
-    pub ratelimit_request_count: Header<'static>,
+    pub rate_limit_reset: Header<'static>,
+    pub rate_limit_max: Header<'static>,
+    pub rate_limit_last_reset: Header<'static>,
+    pub rate_limit_request_count: Header<'static>,
 }
 
 // Can derive debug :chad:
-/// A simple RateLimiter than can keep track of ratelimit data from KeyDB and add ratelimit
+/// A simple RateLimiter than can keep track of rate limit data from KeyDB and add rate limit
 /// related headers to a response type
 #[derive(Debug)]
 pub struct RateLimiter {
@@ -44,23 +44,23 @@ impl RateLimiter {
     where
         I: Display,
     {
-        let ratelimit = match bucket {
-            "info" => &conf.oprish.ratelimits.info,
-            "message_create" => &conf.oprish.ratelimits.message_create,
-            "ratelimits" => &conf.oprish.ratelimits.ratelimits,
+        let rate_limit = match bucket {
+            "info" => &conf.oprish.rate_limits.info,
+            "message_create" => &conf.oprish.rate_limits.message_create,
+            "rate_limits" => &conf.oprish.rate_limits.rate_limits,
             _ => unreachable!(),
         };
         RateLimiter {
-            key: format!("ratelimit:{}:{}", identifier, bucket),
-            reset_after: Duration::from_secs(ratelimit.reset_after as u64),
-            request_limit: ratelimit.limit,
+            key: format!("rate_limit:{}:{}", identifier, bucket),
+            reset_after: Duration::from_secs(rate_limit.reset_after as u64),
+            request_limit: rate_limit.limit,
             request_count: 0,
             last_reset: 0,
         }
     }
 
-    /// Checks if a bucket is ratelimited, if so returns an Error with an ErrorResponse
-    pub async fn process_ratelimit(
+    /// Checks if a bucket is rate limited, if so returns an Error with an ErrorResponse
+    pub async fn process_rate_limit(
         &mut self,
         cache: &mut Connection<Cache>,
     ) -> Result<(), RateLimitHeaderWrapper<ErrorResponse>> {
@@ -127,20 +127,20 @@ impl RateLimiter {
         }
     }
 
-    /// Wraps a response in a RateLimitHeaderWrapper which adds headers relavent to ratelimiting
+    /// Wraps a response in a RateLimitHeaderWrapper which adds headers relevant to rate limiting
     pub fn wrap_response<T, E>(&self, data: T) -> Result<RateLimitHeaderWrapper<T>, E> {
         Ok(RateLimitHeaderWrapper {
             inner: data,
-            ratelimit_reset: Header::new(
+            rate_limit_reset: Header::new(
                 "X-RateLimit-Reset",
                 self.reset_after.as_millis().to_string(),
             ),
-            ratelimit_max: Header::new("X-RateLimit-Max", self.request_limit.to_string()),
-            ratelimit_last_reset: Header::new(
+            rate_limit_max: Header::new("X-RateLimit-Max", self.request_limit.to_string()),
+            rate_limit_last_reset: Header::new(
                 "X-RateLimit-Last-Reset",
                 self.last_reset.to_string(),
             ),
-            ratelimit_request_count: Header::new(
+            rate_limit_request_count: Header::new(
                 "X-RateLimit-Request-Count",
                 self.request_count.to_string(),
             ),
