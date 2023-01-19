@@ -21,7 +21,7 @@ pub struct RateLimitHeaderWrapper<T> {
     pub inner: T,
     pub ratelimit_reset: Header<'static>,
     pub ratelimit_max: Header<'static>,
-    pub ratelimit_bytes_limit: Header<'static>,
+    pub ratelimit_byte_max: Header<'static>,
     pub ratelimit_last_reset: Header<'static>,
     pub ratelimit_request_count: Header<'static>,
     pub ratelimit_sent_bytes: Header<'static>,
@@ -186,8 +186,8 @@ impl RateLimiter {
                 self.reset_after.as_millis().to_string(),
             ),
             ratelimit_max: Header::new("X-RateLimit-Max", self.request_limit.to_string()),
-            ratelimit_bytes_limit: Header::new(
-                "X-RateLimit-Bytes-Left",
+            ratelimit_byte_max: Header::new(
+                "X-RateLimit-Byte-Max",
                 self.file_size_limit.to_string(),
             ),
             ratelimit_last_reset: Header::new(
