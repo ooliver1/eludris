@@ -168,8 +168,9 @@ impl Conf {
         Self::new(env::var("ELUDRIS_CONF").unwrap_or_else(|_| "Eludris.toml".to_string()))
     }
 
+    #[cfg(test)]
     /// Create a new [`Conf`] with default config from the provided instance name.
-    pub fn from_name(instance_name: String) -> anyhow::Result<Self> {
+    fn from_name(instance_name: String) -> anyhow::Result<Self> {
         let conf = Self {
             instance_name,
             description: None,
@@ -181,7 +182,15 @@ impl Conf {
         Ok(conf)
     }
 
-    fn validate(&self) -> Result<(), anyhow::Error> {
+    /// Creates a new [`Conf`] from a toml [`&str`]
+    pub fn from_str(data: &str) -> anyhow::Result<Self> {
+        let data: Self = toml::from_str(data).context("Could not parse provided toml as a Conf")?;
+        data.validate()?;
+        Ok(data)
+    }
+
+    /// Validates a [`Conf`]
+    pub fn validate(&self) -> Result<(), anyhow::Error> {
         if self.instance_name.is_empty() || self.instance_name.len() > 32 {
             bail!("Invalid instance_name length, must be between 1 and 32 characters long");
         }
