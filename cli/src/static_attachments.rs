@@ -25,7 +25,7 @@ pub fn add(path: PathBuf) -> anyhow::Result<()> {
             "{}",
             Style::new()
                 .red()
-                .apply_to(format!("A static file with the same name already exists"))
+                .apply_to("A static file with the same name already exists")
         );
     }
     fs::copy(path, destination_path).context("Could not make static attachment")?;
