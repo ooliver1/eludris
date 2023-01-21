@@ -1,0 +1,16 @@
+use anyhow::Context;
+use eludris::{check_user_permissions, new_docker_command};
+
+pub fn logs() -> anyhow::Result<()> {
+    check_user_permissions()?;
+
+    new_docker_command()
+        .arg("logs")
+        .arg("-f")
+        .spawn()
+        .context("Could not spawn stop command")?
+        .wait()
+        .context("Could not stop instance, you're on your own now soldier. Good luck :D")?;
+
+    Ok(())
+}
