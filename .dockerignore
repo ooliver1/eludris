@@ -16,4 +16,7 @@ effis/Dockerfile
 effis/README.md
 
 !todel/
-effis/README.md
+todel/README.md
+
+!cli
+cli/README.md

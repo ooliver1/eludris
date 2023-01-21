@@ -4,6 +4,7 @@ members = [
     "pandemonium",
     "effis",
     "todel",
+	"cli"
 ]
 
 [workspace.package]
