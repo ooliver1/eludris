@@ -66,9 +66,8 @@ pub async fn new_database_connection() -> anyhow::Result<MySqlConnection> {
         .context("Could not fetch mariadb address, is the docker daemon running?")?
         .stdout;
     let address = String::from_utf8(stdout).context("Could not convert address to a string")?;
-    Ok(
-        MySqlConnection::connect(&format!("mysql://root:root@{}:3306/eludris", address))
-            .await
-            .context("Could not connect to database")?,
-    )
+
+    MySqlConnection::connect(&format!("mysql://root:root@{}:3306/eludris", address))
+        .await
+        .context("Could not connect to database")
 }
