@@ -1,3 +1,4 @@
+mod attachments;
 mod clean;
 mod deploy;
 mod logs;
@@ -34,6 +35,11 @@ enum Commands {
         #[command(subcommand)]
         command: StaticSubcommand,
     },
+    /// Attachment related commands
+    Attachments {
+        #[command(subcommand)]
+        command: AttachmentSubcommand,
+    },
     /// Removes all info related to your Eludris instance
     #[command(alias = "clear")]
     Clean,
@@ -52,8 +58,17 @@ enum StaticSubcommand {
         name: String,
     },
 }
+#[derive(Subcommand)]
+enum AttachmentSubcommand {
+    /// Removes an attachment
+    Remove {
+        /// The id of the attchment to be removed
+        id: u128,
+    },
+}
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match cli.debug {
@@ -66,14 +81,17 @@ fn main() -> anyhow::Result<()> {
     env_logger::init();
 
     match cli.command {
-        Commands::Deploy => deploy::deploy()?,
-        Commands::Stop => stop::stop()?,
-        Commands::Logs => logs::logs()?,
+        Commands::Deploy => deploy::deploy().await?,
+        Commands::Stop => stop::stop().await?,
+        Commands::Logs => logs::logs().await?,
         Commands::Static { command } => match command {
-            StaticSubcommand::Add { path } => static_attachments::add(path)?,
-            StaticSubcommand::Remove { name } => static_attachments::remove(name)?,
+            StaticSubcommand::Add { path } => static_attachments::add(path).await?,
+            StaticSubcommand::Remove { name } => static_attachments::remove(name).await?,
         },
-        Commands::Clean => clean::clean()?,
+        Commands::Attachments { command } => match command {
+            AttachmentSubcommand::Remove { id } => attachments::remove(id).await?,
+        },
+        Commands::Clean => clean::clean().await?,
     }
 
     Ok(())

@@ -1,7 +1,8 @@
-use std::{ffi::OsStr, path::Path, time::Duration};
+use std::{ffi::OsStr, path::Path, process::Stdio, time::Duration};
 
-use anyhow::{anyhow, bail};
+use anyhow::{anyhow, bail, Context};
 use indicatif::{ProgressBar, ProgressStyle};
+use sqlx::{Connection, MySqlConnection};
 use tokio::process::Command;
 use users::{get_current_uid, get_user_by_uid};
 
@@ -51,4 +52,23 @@ pub fn new_docker_command() -> Command {
         .arg("-f")
         .arg("/usr/eludris/docker-compose.yml");
     command
+}
+
+pub async fn new_database_connection() -> anyhow::Result<MySqlConnection> {
+    let stdout = Command::new("docker")
+        .arg("inspect")
+        .arg("-f")
+        .arg("{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}")
+        .arg("eludris-mariadb-1")
+        .stdout(Stdio::piped())
+        .output()
+        .await
+        .context("Could not fetch mariadb address, is the docker daemon running?")?
+        .stdout;
+    let address = String::from_utf8(stdout).context("Could not convert address to a string")?;
+    Ok(
+        MySqlConnection::connect(&format!("mysql://root:root@{}:3306/eludris", address))
+            .await
+            .context("Could not connect to database")?,
+    )
 }
