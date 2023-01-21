@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "logic")]
 use anyhow::{bail, Context};
+use std::str::FromStr;
 #[cfg(feature = "logic")]
 use std::{env, fs, path};
 #[cfg(feature = "logic")]
@@ -182,15 +183,8 @@ impl Conf {
         Ok(conf)
     }
 
-    /// Creates a new [`Conf`] from a toml [`&str`]
-    pub fn from_str(data: &str) -> anyhow::Result<Self> {
-        let data: Self = toml::from_str(data).context("Could not parse provided toml as a Conf")?;
-        data.validate()?;
-        Ok(data)
-    }
-
     /// Validates a [`Conf`]
-    pub fn validate(&self) -> Result<(), anyhow::Error> {
+    pub fn validate(&self) -> anyhow::Result<()> {
         if self.instance_name.is_empty() || self.instance_name.len() > 32 {
             bail!("Invalid instance_name length, must be between 1 and 32 characters long");
         }
@@ -221,6 +215,16 @@ impl Conf {
         );
 
         Ok(())
+    }
+}
+
+impl FromStr for Conf {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let data: Self = toml::from_str(s).context("Could not parse provided toml as a Conf")?;
+        data.validate()?;
+        Ok(data)
     }
 }
 
