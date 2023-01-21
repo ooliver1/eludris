@@ -30,6 +30,10 @@ services:
   effis:
     extends:
       service: oprish
+    volumes:
+      - type: bind
+        source: ./files
+        target: /files
     build:
       dockerfile: effis/Dockerfile
 
