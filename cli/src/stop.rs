@@ -1,7 +1,7 @@
 use anyhow::Context;
 use eludris::{check_user_permissions, new_docker_command};
 
-pub fn stop() -> anyhow::Result<()> {
+pub async fn stop() -> anyhow::Result<()> {
     check_user_permissions()?;
 
     new_docker_command()
@@ -9,6 +9,7 @@ pub fn stop() -> anyhow::Result<()> {
         .spawn()
         .context("Could not spawn stop command")?
         .wait()
+        .await
         .context("Could not stop instance, you're on your own now soldier. Good luck :D")?;
 
     Ok(())

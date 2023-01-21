@@ -1,7 +1,8 @@
-use std::{ffi::OsStr, path::Path, process::Command, time::Duration};
+use std::{ffi::OsStr, path::Path, time::Duration};
 
 use anyhow::{anyhow, bail};
 use indicatif::{ProgressBar, ProgressStyle};
+use tokio::process::Command;
 use users::{get_current_uid, get_user_by_uid};
 
 pub fn check_user_permissions() -> anyhow::Result<()> {

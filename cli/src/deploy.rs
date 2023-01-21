@@ -1,4 +1,4 @@
-use std::{env, fs, str::FromStr};
+use std::{env, str::FromStr};
 
 use anyhow::{bail, Context};
 use console::Style;
@@ -7,28 +7,34 @@ use eludris::{
     check_eludris_exists, check_user_permissions, end_progress_bar, new_docker_command,
     new_progress_bar,
 };
-use reqwest::blocking::Client;
+use reqwest::Client;
 use todel::Conf;
+use tokio::fs;
 
 use crate::clean;
 
-pub fn deploy() -> anyhow::Result<()> {
+pub async fn deploy() -> anyhow::Result<()> {
     check_user_permissions()?;
 
     if !check_eludris_exists()? {
         let bar = new_progress_bar("Eludris directory not found, setting up...");
-        fs::create_dir("/usr/eludris").context("Could not create Eludris directory")?;
+        fs::create_dir("/usr/eludris")
+            .await
+            .context("Could not create Eludris directory")?;
 
         let client = Client::new();
         download_file(
             &client,
             "docker-compose.prebuilt.yml",
             Some("docker-compose.yml"),
-        )?;
-        download_file(&client, "docker-compose.override.yml", None)?;
-        download_file(&client, ".example.env", Some(".env"))?;
-        download_file(&client, "Eludris.example.toml", Some("Eludris.toml"))?;
-        fs::create_dir("/usr/eludris/files").context("Could not create effis files directory")?;
+        )
+        .await?;
+        download_file(&client, "docker-compose.override.yml", None).await?;
+        download_file(&client, ".example.env", Some(".env")).await?;
+        download_file(&client, "Eludris.example.toml", Some("Eludris.toml")).await?;
+        fs::create_dir("/usr/eludris/files")
+            .await
+            .context("Could not create effis files directory")?;
         end_progress_bar(bar, "Finished setting up instance files");
 
         let editor: String;
@@ -57,6 +63,7 @@ pub fn deploy() -> anyhow::Result<()> {
             break;
         }
         let mut base_conf = fs::read_to_string("/usr/eludris/Eludris.toml")
+            .await
             .context("Could not read Eludris.toml file")?;
         loop {
             let conf = Editor::new()
@@ -74,6 +81,7 @@ pub fn deploy() -> anyhow::Result<()> {
                     match conf {
                         Ok(_) => {
                             fs::write("/usr/eludris/Eludris.toml", conf_string)
+                                .await
                                 .context("Could not write new config to Eludris.toml")?;
                             break;
                         }
@@ -83,7 +91,7 @@ pub fn deploy() -> anyhow::Result<()> {
                                 .interact()
                                 .context("Could not spawn confirm prompt")?
                             {
-                                clean::clean()?;
+                                clean::clean().await?;
                                 bail!("Operation cancelled");
                             };
                             continue;
@@ -96,7 +104,7 @@ pub fn deploy() -> anyhow::Result<()> {
                         .interact()
                         .context("Could not spawn confirm prompt")?
                     {
-                        clean::clean()?;
+                        clean::clean().await?;
                         bail!("Operation cancelled");
                     };
                     continue;
@@ -117,6 +125,7 @@ pub fn deploy() -> anyhow::Result<()> {
         .spawn()
         .context("Could not start instance, make sure you have docker-compose installed")?
         .wait()
+        .await
         .context("Instance failed to start")?;
 
     if command.success() {
@@ -131,7 +140,7 @@ pub fn deploy() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn download_file(client: &Client, name: &str, save_name: Option<&str>) -> anyhow::Result<()> {
+async fn download_file(client: &Client, name: &str, save_name: Option<&str>) -> anyhow::Result<()> {
     log::info!("Fetching {}", name);
     let file = client
         .get(format!(
@@ -139,13 +148,16 @@ fn download_file(client: &Client, name: &str, save_name: Option<&str>) -> anyhow
             name
         ))
         .send()
+        .await
         .context(
             "Failed to fetch neccesary files for setup. Please check your connection and try again",
         )?
         .text()
+        .await
         .context("Failed to fetch neccesary files for setup")?;
     log::info!("Writing {}", name);
     fs::write(format!("/usr/eludris/{}", save_name.unwrap_or(name)), file)
+        .await
         .context("Could not write setup files")?;
     Ok(())
 }

@@ -1,13 +1,11 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
 use anyhow::{bail, Context};
 use console::Style;
 use eludris::check_user_permissions;
+use tokio::fs;
 
-pub fn add(path: PathBuf) -> anyhow::Result<()> {
+pub async fn add(path: PathBuf) -> anyhow::Result<()> {
     check_user_permissions()?;
 
     if !path.exists() {
@@ -28,11 +26,13 @@ pub fn add(path: PathBuf) -> anyhow::Result<()> {
                 .apply_to("A static file with the same name already exists")
         );
     }
-    fs::copy(path, destination_path).context("Could not make static attachment")?;
+    fs::copy(path, destination_path)
+        .await
+        .context("Could not make static attachment")?;
     Ok(())
 }
 
-pub fn remove(name: String) -> anyhow::Result<()> {
+pub async fn remove(name: String) -> anyhow::Result<()> {
     check_user_permissions()?;
 
     if !Path::new(&format!("/usr/eludris/files/static/{}", name)).exists() {
@@ -44,6 +44,7 @@ pub fn remove(name: String) -> anyhow::Result<()> {
         );
     }
     fs::remove_file(format!("/usr/eludris/files/static/{}", name))
+        .await
         .context("Could not remove static file")?;
     Ok(())
 }
