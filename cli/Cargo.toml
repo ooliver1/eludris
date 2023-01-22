@@ -1,11 +1,10 @@
 [package]
 name = "eludris"
 edition = "2021"
-description = "A simple CLI to help you manage your Eludris instance"
 version.workspace = true
 documentation.workspace = true
 license = "MIT"
-description = "A CLI meant to help you with your Eludris-hosting related ventures!"
+description = "A simple CLI to help you manage your Eludris instance"
 homepage = "https://github.com/eludris/eludris"
 repository = "https://github.com/eludris/eludris"
 readme = "README.md"
