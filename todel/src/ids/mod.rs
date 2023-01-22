@@ -9,7 +9,7 @@ lazy_static! {
 
 /// Generate an instance id
 pub fn generate_instance_id() -> u64 {
-    // This is just a 42 bit Unix timestamp
+    // This is just a 48 bit Unix timestamp
     SystemTime::now()
         .duration_since(*ELUDRIS_EPOCH)
         .expect("Couldn't get current timestamp")
