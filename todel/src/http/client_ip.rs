@@ -5,7 +5,7 @@ use rocket::{
 use std::{convert::Infallible, fmt::Display, net::IpAddr, str::FromStr};
 
 /// The *real* IP of a client.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ClientIP(IpAddr);
 
 impl Display for ClientIP {

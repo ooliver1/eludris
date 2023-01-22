@@ -1,5 +1,5 @@
 mod handle_connection;
-mod ratelimit;
+mod rate_limit;
 mod utils;
 
 use anyhow::Context;

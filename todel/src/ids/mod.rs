@@ -29,6 +29,7 @@ pub fn generate_instance_id() -> u64 {
 ///
 /// generator.generate_id(); // Generate an ID which also increments the sequence.
 /// ```
+#[derive(Debug, Clone)]
 pub struct IDGenerator {
     instance_id: u64,
     sequence: u16,

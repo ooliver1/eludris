@@ -70,17 +70,17 @@ mod tests {
     }
 
     #[rocket::async_test]
-    async fn ratelimits() {
+    async fn rate_limits() {
         let client = Client::untracked(rocket().unwrap()).await.unwrap();
-        let response = client.get("/ratelimits").dispatch().await;
+        let response = client.get("/rate_limits").dispatch().await;
         let conf = &client.rocket().state::<Conf>().unwrap();
         assert_eq!(response.status(), Status::Ok);
         assert_eq!(
             response.into_string().await.unwrap(),
             serde_json::to_string(&InstanceRateLimits {
-                oprish: conf.oprish.ratelimits.clone(),
-                pandemonium: conf.pandemonium.ratelimit.clone(),
-                effis: conf.effis.ratelimits.clone(),
+                oprish: conf.oprish.rate_limits.clone(),
+                pandemonium: conf.pandemonium.rate_limit.clone(),
+                effis: conf.effis.rate_limits.clone(),
             })
             .unwrap()
         )

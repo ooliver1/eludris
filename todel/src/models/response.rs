@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Base type for error responses
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ErrorResponse {
     pub status: u16,
     pub message: String,
@@ -10,7 +10,7 @@ pub struct ErrorResponse {
 }
 
 /// Preset error types
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ErrorData {
     RateLimitedError(RateLimitError),
@@ -20,33 +20,33 @@ pub enum ErrorData {
     ServerError(ServerError),
 }
 
-/// The error when a client is ratelimited
-#[derive(Debug, Serialize, Deserialize)]
+/// The error when a client is rate limited
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RateLimitError {
     pub retry_after: u64,
 }
 
-/// The error caused when a client surpasses the maximum amount of bytes in an Effis ratelimit
+/// The error caused when a client surpasses the maximum amount of bytes in an Effis rate limit
 /// bucket
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileSizeRateLimitedError {
     pub retry_after: u64,
     pub bytes_left: u64,
 }
 
 /// The error when the supplied request body is invalid
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ValidationError {
     pub field_name: String,
     pub error: String,
 }
 
 /// The error when the requested resource is not found
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NotFoundError;
 
 /// The error when the requested resource is not found
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ServerError {
     pub error: String,
 }
@@ -62,7 +62,7 @@ impl ErrorResponseData for RateLimitError {
     fn to_error_response(self) -> ErrorResponse {
         ErrorResponse {
             status: 429,
-            message: "You have been ratelimited".to_string(),
+            message: "You have been rate limited".to_string(),
             data: Some(ErrorData::RateLimitedError(self)),
         }
     }

@@ -19,15 +19,15 @@ pub type RateLimitedRouteResponse<T> =
 #[derive(Debug, Responder)]
 pub struct RateLimitHeaderWrapper<T> {
     pub inner: T,
-    pub ratelimit_reset: Header<'static>,
-    pub ratelimit_max: Header<'static>,
-    pub ratelimit_bytes_limit: Header<'static>,
-    pub ratelimit_last_reset: Header<'static>,
-    pub ratelimit_request_count: Header<'static>,
-    pub ratelimit_sent_bytes: Header<'static>,
+    pub rate_limit_reset: Header<'static>,
+    pub rate_limit_max: Header<'static>,
+    pub rate_limit_byte_max: Header<'static>,
+    pub rate_limit_last_reset: Header<'static>,
+    pub rate_limit_request_count: Header<'static>,
+    pub rate_limit_sent_bytes: Header<'static>,
 }
 
-/// A simple struct that can do HTTP ratelimiting
+/// A simple struct that can do HTTP rate limiting
 #[derive(Debug)]
 pub struct RateLimiter {
     key: String,
@@ -47,25 +47,25 @@ impl RateLimiter {
     {
         let (reset_after, request_limit, file_size_limit) = match bucket {
             "assets" => (
-                &conf.effis.ratelimits.assets.reset_after,
-                &conf.effis.ratelimits.assets.limit,
-                conf.effis.ratelimits.assets.file_size_limit,
+                &conf.effis.rate_limits.assets.reset_after,
+                &conf.effis.rate_limits.assets.limit,
+                conf.effis.rate_limits.assets.file_size_limit,
             ),
             "attachments" => (
-                &conf.effis.ratelimits.attachments.reset_after,
-                &conf.effis.ratelimits.attachments.limit,
-                conf.effis.ratelimits.attachments.file_size_limit,
+                &conf.effis.rate_limits.attachments.reset_after,
+                &conf.effis.rate_limits.attachments.limit,
+                conf.effis.rate_limits.attachments.file_size_limit,
             ),
             "fetch_file" => (
-                &conf.effis.ratelimits.fetch_file.reset_after,
-                &conf.effis.ratelimits.fetch_file.limit,
+                &conf.effis.rate_limits.fetch_file.reset_after,
+                &conf.effis.rate_limits.fetch_file.limit,
                 0,
             ),
 
             _ => unreachable!(),
         };
         Self {
-            key: format!("ratelimit:{}:{}-{}", identifier, bucket, attachment_bucket),
+            key: format!("rate_limit:{}:{}-{}", identifier, bucket, attachment_bucket),
             reset_after: Duration::from_secs(*reset_after as u64),
             request_limit: *request_limit,
             file_size_limit,
@@ -75,8 +75,8 @@ impl RateLimiter {
         }
     }
 
-    /// Checks if a bucket is ratelimited, if so returns an Error with an ErrorResponse
-    pub async fn process_ratelimit(
+    /// Checks if a bucket is rate limited, if so returns an Error with an ErrorResponse
+    pub async fn process_rate_limit(
         &mut self,
         bytes: u64,
         cache: &mut Connection<Cache>,
@@ -181,24 +181,24 @@ impl RateLimiter {
     pub fn wrap_response<T, E>(&self, data: T) -> Result<RateLimitHeaderWrapper<T>, E> {
         Ok(RateLimitHeaderWrapper {
             inner: data,
-            ratelimit_reset: Header::new(
+            rate_limit_reset: Header::new(
                 "X-RateLimit-Reset",
                 self.reset_after.as_millis().to_string(),
             ),
-            ratelimit_max: Header::new("X-RateLimit-Max", self.request_limit.to_string()),
-            ratelimit_bytes_limit: Header::new(
-                "X-RateLimit-Bytes-Left",
+            rate_limit_max: Header::new("X-RateLimit-Max", self.request_limit.to_string()),
+            rate_limit_byte_max: Header::new(
+                "X-RateLimit-Byte-Max",
                 self.file_size_limit.to_string(),
             ),
-            ratelimit_last_reset: Header::new(
+            rate_limit_last_reset: Header::new(
                 "X-RateLimit-Last-Reset",
                 self.last_reset.to_string(),
             ),
-            ratelimit_request_count: Header::new(
+            rate_limit_request_count: Header::new(
                 "X-RateLimit-Request-Count",
                 self.request_count.to_string(),
             ),
-            ratelimit_sent_bytes: Header::new(
+            rate_limit_sent_bytes: Header::new(
                 "X-RateLimit-Sent-Bytes",
                 self.sent_bytes.to_string(),
             ),

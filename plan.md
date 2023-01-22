@@ -1,5 +1,6 @@
-# You should not be reading this file 
-## Instead, check out the [docs](https://eludris.github.io/docs/). 
+# You should not be reading this file
+
+## Instead, check out the [docs](https://eludris.github.io/docs/).
 
 # Eludris
 
@@ -36,13 +37,13 @@ A community can get unverified at any point in time if they break the Eludris EU
 
 - Accounts are unique.
 
-Much like Reddit and Twitter only one person can have a specific account name, *however* that limitation is broken upon multiple instances, refer to the [federation](#federation) section for more information on the matter.
+Much like Reddit and Twitter only one person can have a specific account name, _however_ that limitation is broken upon multiple instances, refer to the [federation](#federation) section for more information on the matter.
 
 You can follow people or send them friend requests.
 
 You can also gain a Reddit Karma like form of point creatively called Social Credit by the Eludris Team, you gain it by getting more up-votes on your posts, spending time interacting with people, getting rewarded by instance moderators or through events.
 
-- Bots done *right*
+- Bots done _right_
 
 Bots will be user accounts like you'd see on Reddit or twitter which would mean that they wouldn't have any bot-specific API limitations, however you have to set your bot as one for it to get verified.
 
@@ -164,7 +165,8 @@ N: The 8 bits representing the first character in the instance name.
 Eludris uses a non persistent Redis instance to store data that should be really fast to fetch and is ephemeral like rate-limit info.
 
 Here's the structure of currently available keys:
-- ratelimit:\<user-id>:\<method>:\<route>
+
+- rate_limit:\<user-id>:\<method>:\<route>
 
 ### Internal names
 
@@ -184,6 +186,7 @@ Here are some of these names:
 ## How It Works
 
 Now, Eludris is split into 4 main parts which if you have read this far in would have an idea of, they are:
+
 - Oprish: The Eludris RESTful API.
 - Pandemonium: The Eludris websocket based gateway.
 - Effis: The Eludris file server, proxy and CDN.
@@ -213,28 +216,28 @@ The point of this model is to make it so that different clients can work for dif
 
 Anything in the official implementation of Eludris (present at Eludris/eludris) is under the feature `base` and has an id of `0`
 
-|field|type|description|
-|---|---|---|
-|name|`String`|The name of this set of features|
-|id|`u32`|The ID of this set of features|
+| field | type     | description                      |
+| ----- | -------- | -------------------------------- |
+| name  | `String` | The name of this set of features |
+| id    | `u32`    | The ID of this set of features   |
 
 #### Info
 
 A model representing an Eludris instance's info.
 
-|field|type|description|
-|---|---|---|
-|instance_name|`String`|The name of this instance|
-|features|`HashMap<u32, String>`|The features this instance has|
+| field         | type                   | description                    |
+| ------------- | ---------------------- | ------------------------------ |
+| instance_name | `String`               | The name of this instance      |
+| features      | `HashMap<u32, String>` | The features this instance has |
 
-#### Message 
+#### Message
 
 A model representing an Eludris message.
 
-|field|type|description|
-|---|---|---|
-|author|`String`|The name of the user who sent this message|
-|content|`String`|The content of the message|
+| field   | type     | description                                |
+| ------- | -------- | ------------------------------------------ |
+| author  | `String` | The name of the user who sent this message |
+| content | `String` | The content of the message                 |
 
 ### Oprish HTTP Methods
 

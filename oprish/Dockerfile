@@ -6,8 +6,9 @@ WORKDIR /oprish
 # Cargo workspace "necessities"
 COPY ./pandemonium/Cargo.toml /pandemonium/Cargo.toml
 COPY ./effis/Cargo.toml /effis/Cargo.toml
-RUN mkdir /pandemonium/src /effis/src
-RUN touch /pandemonium/src/main.rs /effis/src/main.rs
+COPY ./cli/Cargo.toml /cli/Cargo.toml
+RUN mkdir /pandemonium/src /effis/src /cli/src
+RUN touch /pandemonium/src/main.rs /effis/src/main.rs /cli/src/main.rs
 
 COPY ./Cargo.toml /Cargo.toml
 COPY ./todel /todel

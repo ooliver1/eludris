@@ -4,8 +4,9 @@ members = [
     "pandemonium",
     "effis",
     "todel",
+	"cli"
 ]
 
 [workspace.package]
-version = "0.3.1"
+version = "0.3.2"
 documentation = "https://eludris.github.io/docs"

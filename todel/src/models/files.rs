@@ -3,12 +3,13 @@ use serde_with::{serde_as, DisplayFromStr};
 
 /// The data Effis provides for files
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileData {
     #[serde_as(as = "DisplayFromStr")]
     pub id: u128,
     pub name: String,
     pub bucket: String,
+    #[serde(default = "spoiler_default")]
     #[serde(skip_serializing_if = "is_false")]
     pub spoiler: bool,
     pub metadata: FileMetadata,
@@ -18,8 +19,12 @@ fn is_false(value: &bool) -> bool {
     !value
 }
 
+fn spoiler_default() -> bool {
+    false
+}
+
 /// The enum representing all the possible Effis supported file metadatas
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 #[serde(tag = "type")]
 pub enum FileMetadata {
@@ -99,7 +104,14 @@ mod file_logic {
         ) -> Result<FileData, ErrorResponse> {
             let id = gen.lock().await.generate_id();
             let path = PathBuf::from(format!("files/{}/{}", bucket, id));
-            let name = file.name().unwrap_or("attachment").to_string();
+            let name = match file.raw_name() {
+                Some(name) => PathBuf::from(name.dangerous_unsafe_unsanitized_raw().as_str())
+                    .file_name()
+                    .map(|n| n.to_str().unwrap_or("attachment"))
+                    .unwrap_or("attachment")
+                    .to_string(),
+                None => "attachment".to_string(),
+            };
             file.persist_to(&path).await.unwrap();
             let data = fs::read(&path).await.unwrap();
 

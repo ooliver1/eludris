@@ -18,7 +18,7 @@ use tokio_tungstenite::tungstenite::protocol::CloseFrame;
 use tokio_tungstenite::tungstenite::Message as WebSocketMessage;
 use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
 
-use crate::ratelimit::RateLimiter;
+use crate::rate_limit::RateLimiter;
 use crate::utils::deserialize_message;
 
 /// The duration it takes for a connection to be inactive in for it to be regarded as zombified and
@@ -71,7 +71,7 @@ pub async fn handle_connection(
         Ok(socket) => socket,
         Err(err) => {
             log::error!(
-                "Could not establish a websocket conenction with {}: {}",
+                "Could not establish a websocket connection with {}: {}",
                 rl_address,
                 err
             );
@@ -79,15 +79,15 @@ pub async fn handle_connection(
         }
     };
 
-    let mut ratelimiter = RateLimiter::new(
+    let mut rate_limiter = RateLimiter::new(
         cache,
         rl_address,
-        Duration::from_secs(conf.pandemonium.ratelimit.reset_after as u64),
-        conf.pandemonium.ratelimit.limit,
+        Duration::from_secs(conf.pandemonium.rate_limit.reset_after as u64),
+        conf.pandemonium.rate_limit.limit,
     );
-    if let Err(()) = ratelimiter.process_ratelimit().await {
+    if let Err(()) = rate_limiter.process_rate_limit().await {
         log::info!(
-            "Disconnected a client: {}, reason: Hit ratelimit",
+            "Disconnected a client: {}, reason: Hit rate_limit",
             rl_address
         );
         return;
@@ -101,9 +101,9 @@ pub async fn handle_connection(
     let handle_rx = async {
         while let Some(msg) = rx.next().await {
             log::trace!("New gateway message:\n{:#?}", msg);
-            if ratelimiter.process_ratelimit().await.is_err() {
+            if rate_limiter.process_rate_limit().await.is_err() {
                 log::info!(
-                    "Disconnected a client: {}, reason: Hit ratelimit",
+                    "Disconnected a client: {}, reason: Hit rate_limit",
                     rl_address
                 );
                 break;
@@ -165,7 +165,7 @@ pub async fn handle_connection(
             close_socket(tx, rx, CloseFrame { code: CloseCode::Error, reason: Cow::Borrowed("Client connection dead") }, rl_address).await
         }
         _ = handle_rx => {
-            close_socket(tx, rx, CloseFrame { code: CloseCode::Error, reason: Cow::Borrowed("Client hit ratelimit") }, rl_address).await;
+            close_socket(tx, rx, CloseFrame { code: CloseCode::Error, reason: Cow::Borrowed("Client hit rate limit") }, rl_address).await;
         },
         _ = handle_events => {
             close_socket(tx, rx, CloseFrame { code: CloseCode::Error, reason: Cow::Borrowed("Server Error") }, rl_address).await;
