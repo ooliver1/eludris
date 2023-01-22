@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "logic")]
 use anyhow::{bail, Context};
+#[cfg(feature = "logic")]
 use std::str::FromStr;
 #[cfg(feature = "logic")]
 use std::{env, fs, path};
@@ -218,6 +219,7 @@ impl Conf {
     }
 }
 
+#[cfg(feature = "logic")]
 impl FromStr for Conf {
     type Err = anyhow::Error;
 
