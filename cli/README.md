@@ -11,6 +11,12 @@ You can easily install the Eludris CLI using cargo:
 cargo install eludris
 ```
 
+The Eludris CLI is also available on the [AUR](https://aur.archlinux.org/packages/eludris):
+
+```sh
+<your preferred aur helper> -S eludris
+```
+
 ## Usage
 
 You can find out more by reading the [CLI docs](https://eludris.github.io/docs/cli.html)
