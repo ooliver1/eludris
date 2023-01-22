@@ -746,7 +746,7 @@ checksum = "03d8c417d7a8cb362e0c37e5d815f5eb7c37f79ff93707329d5a194e42e54ca0"
 
 [[package]]
 name = "effis"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "dotenvy",
@@ -770,7 +770,7 @@ dependencies = [
 
 [[package]]
 name = "eludris"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "clap",
@@ -1871,7 +1871,7 @@ dependencies = [
 
 [[package]]
 name = "oprish"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "deadpool-redis",
@@ -1900,7 +1900,7 @@ checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 
 [[package]]
 name = "pandemonium"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "deadpool-redis",
@@ -3228,7 +3228,7 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "todel"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "ffprobe",
