@@ -2,7 +2,7 @@
 name = "todel"
 edition = "2021"
 version.workspace = true
-documentation.workspace = true
+documentation = "https://docs.rs/todel"
 license = "MIT"
 description = "The Eludris shared models and logic crate"
 homepage = "https://github.com/eludris/eludris"
