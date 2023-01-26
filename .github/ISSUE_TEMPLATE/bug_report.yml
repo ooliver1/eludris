@@ -30,6 +30,6 @@ body:
 
   - type: textarea
     attributes:
-      label: Minimum Reproducible Sample/Code
+      label: Minimum Reproduction Steps
       description: Insert any code or steps to help reproduce this issue
       
