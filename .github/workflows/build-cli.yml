@@ -94,6 +94,7 @@ jobs:
         run: |
           mkdir -p .debpkg/usr/bin
           mkdir -p .rpmpkg/usr/bin
+          chmod +x eludris
           cp -p eludris .debpkg/usr/bin/
           cp -p eludris .rpmpkg/usr/bin/
       - name: Build DEB
@@ -101,7 +102,7 @@ jobs:
         with:
           package: ${{ env.NAME }}
           package_root: .debpkg
-          maintainer: Oliver Wilkes
+          maintainer: Oliver Wilkes <oliver@eludris.gay>
           version: ${{ github.ref }}
           arch: "amd64"
           desc: "${{ env.DESC }}"
@@ -112,7 +113,7 @@ jobs:
           summary: "${{ env.DESC }}"
           package: ${{ env.NAME }}
           package_root: .rpmpkg
-          maintainer: Oliver Wilkes
+          maintainer: Oliver Wilkes <oliver@eludris.gay>
           version: ${{ github.ref }}
           arch: "x86_64"
           desc: "${{ env.DESC }}"
